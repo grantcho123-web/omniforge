@@ -1,6 +1,6 @@
 # ebit-gym
 
-[![ci](https://github.com/grantcho123-web/rlgym-v0/actions/workflows/ci.yml/badge.svg)](https://github.com/grantcho123-web/rlgym-v0/actions/workflows/ci.yml)
+[![ci](https://github.com/grantcho123-web/ebit-gym/actions/workflows/ci.yml/badge.svg)](https://github.com/grantcho123-web/ebit-gym/actions/workflows/ci.yml)
 
 Reinforcement-learning environments for financial analysis.
 

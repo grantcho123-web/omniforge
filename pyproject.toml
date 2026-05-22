@@ -35,8 +35,8 @@ train = ["stable-baselines3>=2.3", "torch>=2.0"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [project.urls]
-Homepage = "https://github.com/grantcho123-web/rlgym-v0"
-Issues = "https://github.com/grantcho123-web/rlgym-v0/issues"
+Homepage = "https://github.com/grantcho123-web/ebit-gym"
+Issues = "https://github.com/grantcho123-web/ebit-gym/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ebit_gym"]
