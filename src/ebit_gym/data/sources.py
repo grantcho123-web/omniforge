@@ -47,3 +47,43 @@ class SyntheticOHLCV:
             {"open": open_, "high": high, "low": low, "close": close, "volume": volume},
             index=index,
         )
+
+
+@dataclass
+class YFinanceOHLCV:
+    """OHLCV bars from Yahoo Finance via ``yfinance``.
+
+    Requires ``pip install ebit-gym[data]``. Network-bound — do not use in
+    unit tests. Cache the returned DataFrame to disk for repeatable backtests.
+    """
+
+    symbol: str
+    start: str = "2015-01-01"
+    end: str | None = None
+    interval: str = "1d"
+
+    def load(self) -> pd.DataFrame:
+        try:
+            import yfinance as yf
+        except ImportError as e:
+            raise ImportError(
+                "YFinanceOHLCV requires the [data] extra: pip install ebit-gym[data]"
+            ) from e
+
+        df = yf.download(
+            self.symbol,
+            start=self.start,
+            end=self.end,
+            interval=self.interval,
+            auto_adjust=True,
+            progress=False,
+        )
+        if df.empty:
+            raise ValueError(f"no data returned for symbol={self.symbol!r}")
+
+        # yfinance returns columns capitalized and sometimes as a MultiIndex
+        # when a single ticker is wrapped in a list — normalize both cases.
+        if isinstance(df.columns, pd.MultiIndex):
+            df = df.droplevel(1, axis=1)
+        df = df.rename(columns=str.lower)
+        return df[OHLCV_COLUMNS].dropna()

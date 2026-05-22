@@ -1,3 +1,3 @@
-from ebit_gym.data.sources import SyntheticOHLCV
+from ebit_gym.data.sources import SyntheticOHLCV, YFinanceOHLCV
 
-__all__ = ["SyntheticOHLCV"]
+__all__ = ["SyntheticOHLCV", "YFinanceOHLCV"]
