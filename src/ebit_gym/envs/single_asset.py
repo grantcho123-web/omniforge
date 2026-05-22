@@ -1,17 +1,19 @@
-"""Single-asset discrete-position trading environment.
+"""Single-asset trading environment.
 
-v0 design choices:
-- Discrete actions: 0=flat, 1=long, 2=short. Position-sizing comes in v1.
-- Observation: flattened window of OHLCV plus current position. Box space so
-  stock SB3 ``MlpPolicy`` works out of the box.
-- Reward: log-return of the held position over the next bar, net of
-  proportional transaction cost charged on position *changes*.
-- Episode ends when the data runs out (``terminated``) or when equity falls
-  below ``ruin_threshold`` (also ``terminated``). ``truncated`` is reserved
-  for future time-limit wrappers.
+Design:
+- Actions: either ``Discrete(len(positions))`` mapped through a custom
+  position grid (e.g. ``[-1, -0.5, 0, 0.5, 1]``), or ``Box([-1, 1])`` for
+  continuous position sizing. Selected via the ``positions`` argument.
+- Observation: flattened window of OHLCV (close-normalized) plus current
+  position. ``Box`` space so stock ``MlpPolicy`` works out of the box.
+- Reward: position-weighted next-bar return net of proportional transaction
+  cost + slippage, charged on position *changes*.
+- Episode ends when the data runs out or equity falls below
+  ``ruin_threshold``. ``truncated`` is reserved for future time-limit wrappers.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import gymnasium as gym
@@ -21,7 +23,8 @@ from gymnasium import spaces
 
 from ebit_gym.data.sources import OHLCV_COLUMNS
 
-_POSITION_FROM_ACTION = np.array([0.0, 1.0, -1.0], dtype=np.float32)
+# Default discrete grid: flat / long / short. Kept for the v0 API contract.
+DEFAULT_POSITIONS: tuple[float, ...] = (0.0, 1.0, -1.0)
 
 
 @dataclass
@@ -33,7 +36,17 @@ class TradingConfig:
 
 
 class SingleAssetTradingEnv(gym.Env):
-    """Gymnasium env wrapping a single-asset OHLCV stream."""
+    """Gymnasium env wrapping a single-asset OHLCV stream.
+
+    Args:
+        data: DataFrame with at least the columns ``[open, high, low, close, volume]``.
+        config: env hyperparameters; defaults are conservative.
+        positions: action-space spec.
+            - ``None`` → continuous ``Box([-1, 1])``. Action is the target position.
+            - ``Sequence[float]`` → ``Discrete(len(positions))``; action indexes
+              into the grid. Pass e.g. ``[-1, -0.5, 0, 0.5, 1]`` for sized
+              positions, or ``(0, 1, -1)`` for the v0 flat/long/short default.
+    """
 
     metadata = {"render_modes": []}
 
@@ -41,6 +54,7 @@ class SingleAssetTradingEnv(gym.Env):
         self,
         data: pd.DataFrame,
         config: TradingConfig | None = None,
+        positions: Sequence[float] | None = DEFAULT_POSITIONS,
     ) -> None:
         super().__init__()
         missing = set(OHLCV_COLUMNS) - set(data.columns)
@@ -53,11 +67,24 @@ class SingleAssetTradingEnv(gym.Env):
         self._prices = data[OHLCV_COLUMNS].to_numpy(dtype=np.float32)
         self._close = self._prices[:, OHLCV_COLUMNS.index("close")]
 
+        if positions is None:
+            self._positions = None
+            self.action_space = spaces.Box(
+                low=-1.0, high=1.0, shape=(1,), dtype=np.float32
+            )
+        else:
+            grid = np.asarray(list(positions), dtype=np.float32)
+            if grid.size == 0:
+                raise ValueError("positions must be non-empty or None for continuous")
+            if (np.abs(grid) > 1.0).any():
+                raise ValueError("positions must lie in [-1, 1]")
+            self._positions = grid
+            self.action_space = spaces.Discrete(len(grid))
+
         obs_dim = self.config.window_size * len(OHLCV_COLUMNS) + 1
         self.observation_space = spaces.Box(
             low=-np.inf, high=np.inf, shape=(obs_dim,), dtype=np.float32
         )
-        self.action_space = spaces.Discrete(3)
 
         # Episode state, populated in reset().
         self._t: int = 0
@@ -78,8 +105,8 @@ class SingleAssetTradingEnv(gym.Env):
         self._equity = 1.0
         return self._observe(), self._info()
 
-    def step(self, action: int) -> tuple[np.ndarray, float, bool, bool, dict]:
-        new_position = float(_POSITION_FROM_ACTION[int(action)])
+    def step(self, action) -> tuple[np.ndarray, float, bool, bool, dict]:
+        new_position = self._position_from_action(action)
         position_change = abs(new_position - self._position)
 
         # Price evolution: hold the new position from t to t+1.
@@ -103,6 +130,13 @@ class SingleAssetTradingEnv(gym.Env):
         return self._observe(), float(reward), terminated, truncated, self._info()
 
     # ------------------------------------------------------------------ helpers
+
+    def _position_from_action(self, action) -> float:
+        if self._positions is None:
+            # Continuous: action is a length-1 array (or scalar). Clip to [-1, 1].
+            value = float(np.asarray(action).reshape(-1)[0])
+            return float(np.clip(value, -1.0, 1.0))
+        return float(self._positions[int(action)])
 
     def _observe(self) -> np.ndarray:
         # Normalize the window by the latest close so the policy sees scale-free

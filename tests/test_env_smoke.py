@@ -1,4 +1,4 @@
-"""Smoke tests for the v0 single-asset env.
+"""Smoke tests for the single-asset env.
 
 These verify the environment satisfies the Gymnasium API contract well enough
 that any stock algorithm (PPO, DQN, etc.) can drive it. They also assert that
@@ -8,15 +8,17 @@ bug in trading envs.
 from __future__ import annotations
 
 import numpy as np
+import pytest
+from gymnasium import spaces
 
 from ebit_gym import SingleAssetTradingEnv
 from ebit_gym.data import SyntheticOHLCV
 from ebit_gym.envs.single_asset import TradingConfig
 
 
-def _make_env(seed: int = 0) -> SingleAssetTradingEnv:
+def _make_env(seed: int = 0, **kwargs) -> SingleAssetTradingEnv:
     data = SyntheticOHLCV(n_bars=256, seed=seed).load()
-    return SingleAssetTradingEnv(data, TradingConfig(window_size=16))
+    return SingleAssetTradingEnv(data, TradingConfig(window_size=16), **kwargs)
 
 
 def test_reset_returns_well_shaped_obs():
@@ -72,3 +74,37 @@ def test_determinism_same_seed():
         out_b = env_b.step(action)
         np.testing.assert_array_equal(out_a[0], out_b[0])
         assert out_a[1] == out_b[1]
+
+
+def test_custom_discrete_grid():
+    env = _make_env(positions=[-1.0, -0.5, 0.0, 0.5, 1.0])
+    assert isinstance(env.action_space, spaces.Discrete)
+    assert env.action_space.n == 5
+    env.reset(seed=0)
+    # Action 3 maps to position +0.5.
+    _, reward, _, _, info = env.step(3)
+    assert info["position"] == 0.5
+    expected_cost = 0.5 * (env.config.transaction_cost + env.config.slippage)
+    # PnL contribution is at most |0.5 * bar_return|; cost is deterministic.
+    assert abs(reward + expected_cost) < 0.05  # cost component recognizable
+
+
+def test_continuous_action_space():
+    env = _make_env(positions=None)
+    assert isinstance(env.action_space, spaces.Box)
+    assert env.action_space.shape == (1,)
+    env.reset(seed=0)
+    # Continuous action: 0.25 long
+    _, _, _, _, info = env.step(np.array([0.25], dtype=np.float32))
+    assert info["position"] == pytest.approx(0.25)
+    # Out-of-range action clips into [-1, 1]
+    _, _, _, _, info = env.step(np.array([5.0], dtype=np.float32))
+    assert info["position"] == 1.0
+
+
+def test_rejects_invalid_position_grid():
+    data = SyntheticOHLCV(n_bars=64, seed=0).load()
+    with pytest.raises(ValueError, match="lie in"):
+        SingleAssetTradingEnv(data, positions=[1.5])
+    with pytest.raises(ValueError, match="non-empty"):
+        SingleAssetTradingEnv(data, positions=[])
