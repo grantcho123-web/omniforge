@@ -4,7 +4,7 @@
 
 Reinforcement-learning environments for financial analysis.
 
-`ebit-gym` is an [ebit](https://example.invalid) product offering. The v0
+`ebit-gym` is an [ebit](https://ebitglobal.ai) product offering. The v0
 ships a single-asset trading environment that conforms to the
 [Gymnasium](https://gymnasium.farama.org) API and works with any standard RL
 library (Stable-Baselines3, CleanRL, RLlib).
