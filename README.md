@@ -11,7 +11,7 @@ library (Stable-Baselines3, CleanRL, RLlib).
 
 ## Status
 
-Pre-alpha (v0.0.1). API will break.
+Pre-alpha (v0.1.0). API will break.
 
 ## Install
 
@@ -43,7 +43,7 @@ env = SingleAssetTradingEnv(data)
 obs, info = env.reset(seed=0)
 done = False
 while not done:
-    action = env.action_space.sample()  # 0=flat, 1=long, 2=short
+    action = env.action_space.sample()  # default grid: 0=flat, 1=long, 2=short
     obs, reward, terminated, truncated, info = env.step(action)
     done = terminated or truncated
 
@@ -111,15 +111,17 @@ hand-rolled backtest.
 
 - **Env API:** Gymnasium-compatible (`reset`, `step`, `observation_space`, `action_space`).
 - **Observations:** windowed OHLCV (close-normalized) plus current position, flattened to `Box`.
-- **Actions:** `Discrete(3)` → `{flat, long, short}`. Continuous position sizing lands in v1.
+- **Actions:** either `Discrete(N)` over a custom position grid (default `{flat, long, short}`; pass e.g. `[-1, -0.5, 0, 0.5, 1]` for sized) or continuous `Box([-1, 1])` for sizing.
 - **Reward:** position-weighted bar return, net of proportional transaction cost and slippage.
 - **Frictions:** transaction cost and slippage are baked in by default — silent zero-cost backtests are the most common bug in financial RL.
+- **Backtesting:** `WalkForward` produces ordered (train, eval) folds in expanding or rolling mode for methodologically-correct out-of-sample evaluation.
 - **Reproducibility:** seeded RNG, deterministic synthetic data, no hidden time-leakage.
 
 ## Roadmap
 
-- **v0** (current): single-asset, discrete actions, synthetic + yfinance data, smoke tests.
-- **v1:** continuous position sizing, multi-asset (portfolio), walk-forward backtest harness, CLI, docs site.
+- **v0.1** (current): single-asset env (discrete + continuous actions), synthetic + yfinance data, walk-forward harness, eval metrics, SB3 PPO demo, SPY tearsheet.
+- **v0.2:** multi-asset portfolio env, CLI (`ebit-gym train ...`), docs site, richer observation features (technicals, regime indicators).
+- **v1.0:** API stabilization, PyPI release.
 - **v2:** hosted platform — bring-your-own data, managed training runs, signal/policy export.
 
 ## Layout
@@ -128,9 +130,11 @@ hand-rolled backtest.
 src/ebit_gym/
   envs/          Gymnasium environments
   data/          OHLCV data sources (synthetic in core; yfinance under [data])
+  backtest/      Walk-forward and other train/eval split harnesses
   eval/          Risk-adjusted metrics (Sharpe, Sortino, max DD, turnover)
   wrappers/      Reserved for env wrappers (normalization, time-limits, ...)
-tests/           pytest smoke tests — run with `pytest`
+scripts/         Runnable demos (PPO smoke test, SPY tearsheet)
+tests/           pytest tests — run with `pytest`
 ```
 
 ## License
