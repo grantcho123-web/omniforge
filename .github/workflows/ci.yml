@@ -22,10 +22,10 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      - name: Create venv + install (core + dev)
+      - name: Create venv + install (core + dev + models)
         run: |
           uv venv -p ${{ matrix.python-version }}
-          uv pip install -e ".[dev]"
+          uv pip install -e ".[dev,models]"
 
       - name: Lint (ruff)
         run: .venv/bin/ruff check src tests scripts
