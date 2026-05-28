@@ -1,0 +1,137 @@
+{
+  "name": "ebit-gym-quickstart",
+  "version": "0.1.0",
+  "schema_version": "0.2.0",
+  "description": "Tiny five-task demo for first-time CLI users. Not a real corpus — exercises every reference grader type.",
+  "tasks": [
+    {
+      "metadata": {
+        "task_id": "q-arith-1",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "math.basic",
+        "difficulty": "easy",
+        "author": "demo",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": ["arithmetic"],
+        "language": "en"
+      },
+      "prompt": "What is 6 times 7? Answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {"answer": "42", "strip": true}
+      },
+      "reference_answer": "42",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-bond-pv-1",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.bonds",
+        "difficulty": "medium",
+        "author": "demo",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": ["bond-pricing", "present-value"],
+        "language": "en"
+      },
+      "prompt": "A 5-year bond pays a $50 annual coupon and matures at $1000 face value. At a 6% annual discount rate, what is its present value? Round to the nearest whole dollar. Answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {"numeric_tolerance": 2.0}
+      },
+      "reference_answer": "958",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-keyword-1",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "language.keyword",
+        "difficulty": "easy",
+        "author": "demo",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": ["regex"],
+        "language": "en"
+      },
+      "prompt": "Write one sentence about a famous European city. Make sure the word 'London' appears somewhere in your answer.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "regex",
+        "config": {"pattern": "London", "flags": "i"}
+      },
+      "reference_answer": null,
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-composite-1",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "language.multi",
+        "difficulty": "medium",
+        "author": "demo",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": ["composite"],
+        "language": "en"
+      },
+      "prompt": "Answer the question 'is pi greater than 3?' with the word 'yes', and mention the symbol 'pi' somewhere in your answer.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "composite",
+        "config": {
+          "components": [
+            {"weight": 1, "spec": {"type": "regex", "config": {"pattern": "yes", "flags": "i"}}},
+            {"weight": 1, "spec": {"type": "regex", "config": {"pattern": "pi"}}}
+          ],
+          "pass_threshold": 0.7
+        }
+      },
+      "reference_answer": null,
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-essay-ko-1",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "language.korean.culture",
+        "difficulty": "hard",
+        "author": "demo",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": ["korean", "open-ended"],
+        "language": "ko"
+      },
+      "prompt": "한국 음식 문화에 대해 한 단락으로 설명해 주세요. (Write one paragraph about Korean food culture in Korean.)",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "human",
+        "config": {
+          "queue": "ko-language-reviewers",
+          "instructions": "Score for native fluency, cultural accuracy, and depth of insight. 0=incoherent, 0.5=basic but accurate, 1.0=native-quality with real cultural specificity."
+        }
+      },
+      "reference_answer": null,
+      "rubric": null
+    }
+  ],
+  "splits": {
+    "quick": ["q-arith-1", "q-bond-pv-1"],
+    "auto_gradable": ["q-arith-1", "q-bond-pv-1", "q-keyword-1", "q-composite-1"],
+    "all": ["q-arith-1", "q-bond-pv-1", "q-keyword-1", "q-composite-1", "q-essay-ko-1"]
+  },
+  "provenance": {
+    "author_org": "ebit",
+    "license": "Apache-2.0",
+    "note": "Quickstart demo only — not a real eval corpus. Replaced by corpora/reference-v0/ in Task #8."
+  }
+}
