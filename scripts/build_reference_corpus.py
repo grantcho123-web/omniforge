@@ -29,8 +29,6 @@ from omniforge.core.task import (
     TaskMetadata,
     TaskSet,
 )
-from omniforge.data.sources import SyntheticOHLCV
-from omniforge.tasks.trading import SimulatedTradingTaskBuilder
 
 OUT_DIR = Path("corpora/reference-v0")
 OUT_PATH = OUT_DIR / "manifest.json"
@@ -210,7 +208,9 @@ def hand_written_tasks() -> list[Task]:
                 "適用されます。さらに消費税 10% が割引後の価格に加算されます。"
                 "最終的な支払い額はいくらですか。数字のみで答えてください。"
             ),
-            grader_spec=GraderSpec(type="exact_match"),
+            grader_spec=GraderSpec(
+                type="exact_match", config={"numeric_tolerance": 1.0}
+            ),
             reference_answer="7040",
         ),
         # ---------------------------- ENGLISH / REGEX -----------------------------
@@ -277,34 +277,19 @@ def hand_written_tasks() -> list[Task]:
     ]
 
 
-def trading_task() -> Task:
-    """Generate one trading task from the SimulatedTradingTaskBuilder.
-
-    Synthetic OHLCV with a fixed seed → fully reproducible output.
-    """
-    data = SyntheticOHLCV(n_bars=128, seed=42).load()
-    builder = SimulatedTradingTaskBuilder(
-        data=data, window_size=32, max_tasks=1, symbol="SYN"
-    )
-    [task] = builder.tasks()
-    # Override the auto-generated id and tags for corpus stability.
-    task = task.model_copy(
-        update={
-            "metadata": task.metadata.model_copy(
-                update={
-                    "task_id": "q-trading-syn-001",
-                    "author": "omniforge-reference-v0",
-                    "created_at": NOW,
-                    "tags": ["trading", "ohlcv", "synthetic"],
-                }
-            )
-        }
-    )
-    return task
+# NOTE: A synthetic-data trading task was previously included here using
+# SimulatedTradingTaskBuilder with a perfect-foresight oracle (sign of next
+# bar's return). Real-world testing showed BOTH Haiku 4.5 and Sonnet 4.5
+# fail it identically on the same window — because the underlying
+# random-walk synthetic data has no signal to extract. The task was testing
+# coin-flip luck, not reasoning. Dropped from the reference corpus on
+# 2026-05-28. Replace with a deterministic trading scenario (e.g., explicit
+# technical indicators with a textbook-correct response) if you want a real
+# trading task in the corpus.
 
 
 def build_taskset() -> TaskSet:
-    tasks = hand_written_tasks() + [trading_task()]
+    tasks = hand_written_tasks()
 
     quick = ["q-bond-pv-001", "q-acct-ratio-001", "q-currency-001"]
     korean = [t.metadata.task_id for t in tasks if t.metadata.language == "ko"]

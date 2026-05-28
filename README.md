@@ -129,7 +129,7 @@ for task in taskset.tasks:
 
 ## Reference corpus
 
-`corpora/reference-v0/manifest.json` — ten tasks demonstrating every
+`corpora/reference-v0/manifest.json` — nine tasks demonstrating every
 grader type and three languages:
 
 | Task ID | Domain | Language | Grader |
@@ -137,13 +137,12 @@ grader type and three languages:
 | q-bond-pv-001 | finance.quant.bonds | en | exact_match (numeric tolerance) |
 | q-bs-call-001 | finance.quant.options | en | exact_match (numeric tolerance) |
 | q-acct-ratio-001 | finance.accounting | en | exact_match (numeric tolerance) |
-| q-ko-bond-001 | finance.korean.bonds | ko | exact_match |
+| q-ko-bond-001 | finance.korean.bonds | ko | exact_match (numeric tolerance) |
 | q-ko-culture-001 | language.korean.culture | ko | human |
 | q-ko-idiom-001 | language.korean.reasoning | ko | human |
-| q-ja-math-001 | math.basic | ja | exact_match |
+| q-ja-math-001 | math.basic | ja | exact_match (numeric tolerance) |
 | q-currency-001 | language.keyword | en | regex |
 | q-deal-memo-001 | finance.banking.deal | en | composite |
-| q-trading-syn-001 | finance.trading.single_asset | en | exact_match (numeric tolerance) |
 
 Regenerate with:
 

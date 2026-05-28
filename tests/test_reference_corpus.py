@@ -33,7 +33,7 @@ def taskset() -> TaskSet:
 
 
 def test_corpus_has_expected_size(taskset):
-    assert len(taskset.tasks) == 10
+    assert len(taskset.tasks) == 9
     assert taskset.name == "omniforge-reference-v0"
 
 
@@ -44,9 +44,10 @@ def test_all_task_ids_unique(taskset):
     assert len(ids) == len(set(ids))
 
 
-def test_corpus_has_korean_beachhead_coverage(taskset):
-    """The GTM premise depends on Korean-language coverage being present
-    and substantial."""
+def test_corpus_has_korean_coverage(taskset):
+    """Korean-language coverage was the original beachhead premise; we keep
+    a few Korean tasks even after dropping the framing because demonstrating
+    language coverage is intrinsically useful."""
     korean_tasks = [t for t in taskset.tasks if t.metadata.language == "ko"]
     assert len(korean_tasks) >= 3
     # At least one numeric (auto-graded) and at least one open-ended (human-graded).
