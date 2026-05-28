@@ -2,140 +2,217 @@
 
 [![ci](https://github.com/grantcho123-web/ebit-gym/actions/workflows/ci.yml/badge.svg)](https://github.com/grantcho123-web/ebit-gym/actions/workflows/ci.yml)
 
-Reinforcement-learning environments for financial analysis.
+**RL data infrastructure for AI labs, built by [ebit](https://ebitglobal.ai).**
 
-`ebit-gym` is an [ebit](https://ebitglobal.ai) product offering. The v0
-ships a single-asset trading environment that conforms to the
-[Gymnasium](https://gymnasium.farama.org) API and works with any standard RL
-library (Stable-Baselines3, CleanRL, RLlib).
+ebit-gym is the open-source platform behind ebit's RL data offering — the
+same shape of product Scale AI, Mercor, and Surge sell to frontier AI labs,
+focused on East Asian languages and finance and graded by domain experts.
 
-## Status
+## What this is
 
-Pre-alpha (v0.1.0). API will break.
+A frontier AI lab training the next generation of LLMs needs three things:
+
+1. A **task corpus** — thousands of prompts with verifiable rubrics, written
+   by people who actually do the job being evaluated.
+2. A **grading workforce** — domain experts who can score open-ended
+   responses where no auto-grader suffices.
+3. A **platform** that lets the lab run their model over the corpus, capture
+   graded attempts, and export training-ready data in their fine-tune format.
+
+ebit-gym is open-source piece #3. Pieces #1 and #2 — the curated corpora and
+the expert workforce — are what ebit sells, with the platform as the
+visible credential.
+
+## Positioning
+
+| Category | Examples | ebit |
+|---|---|---|
+| Breadth-first US incumbents | Scale, Mercor, Surge, Invisible | We don't compete with them on breadth |
+| Vertically focused on... | (varies) | **East Asian finance, language, and reasoning** |
+| Native graders | (limited) | **Korean / Japanese / Chinese domain experts** |
+| Customer focus | Mostly US frontier labs | **Asian frontier labs first** (Naver, Kakao, LG AI, Upstage, Krafton; Sakana, Preferred Networks; eligible Chinese labs) |
+
+The wedge: every task is written and graded by people who have done the
+work — at hedge funds, prop shops, banks, K-content studios, Korean
+chip foundries. We don't do law. We don't do medicine. We do East Asian
+finance and reasoning, and we do them better than anyone selling
+breadth.
+
+## Architecture
+
+```
+                   ┌──────────────────────────┐
+                   │  ebit-gym  CLI / API     │
+                   └────────────┬─────────────┘
+                                │
+                   ┌────────────┴─────────────┐
+                   │  AttemptRunner           │
+                   │  (load → ask → record)   │
+                   └────────────┬─────────────┘
+                                │
+        ┌───────────────────────┴────────────────────┐
+        │                                            │
+┌───────┴──────────┐                       ┌─────────┴────────┐
+│  ModelAdapter    │                       │  Grader          │
+│  • OpenAI        │                       │  • ExactMatch    │
+│  • Anthropic     │                       │  • Regex         │
+│  • Upstage       │                       │  • LLMJudge      │
+│  • Mock          │                       │  • Composite     │
+└──────────────────┘                       │  • Human         │
+                                           └──────────────────┘
+                                ▲
+                                │
+                   ┌────────────┴─────────────┐
+                   │  Task / TaskSet /        │
+                   │  Attempt / GradingResult │
+                   │  (versioned schemas)     │
+                   └──────────────────────────┘
+                                │
+                   ┌────────────┴─────────────┐
+                   │  Export adapters         │
+                   │  • OpenAI fine-tune JSONL│
+                   │  • Anthropic JSONL       │
+                   │  • Generic JSONL         │
+                   └──────────────────────────┘
+```
+
+Everything inside ebit-gym speaks four versioned types: `Task`, `TaskSet`,
+`Attempt`, `GradingResult`. Adding a new model provider, grader, task
+domain, or export format is a single self-contained file.
 
 ## Install
 
 ```bash
-# Once published:
-pip install ebit-gym
-
-# From source (recommended during development):
-pip install -e ".[dev,train]"
-```
-
-`uv` is recommended for environment management:
-
-```bash
+# From source (development):
 uv venv -p 3.11
 source .venv/bin/activate
-uv pip install -e ".[dev,train]"
+uv pip install -e ".[dev,models]"
+
+# Add real data + RL training extras if you want them:
+uv pip install -e ".[dev,models,data,train]"
 ```
+
+PyPI release lands with v0.2.1.
 
 ## Quickstart
 
-```python
-from ebit_gym import SingleAssetTradingEnv
-from ebit_gym.data import SyntheticOHLCV
-
-data = SyntheticOHLCV(n_bars=2048, seed=0).load()
-env = SingleAssetTradingEnv(data)
-
-obs, info = env.reset(seed=0)
-done = False
-while not done:
-    action = env.action_space.sample()  # default grid: 0=flat, 1=long, 2=short
-    obs, reward, terminated, truncated, info = env.step(action)
-    done = terminated or truncated
-
-print(f"final equity: {info['equity']:.4f}")
-```
-
-### Train PPO end-to-end
-
 ```bash
-pip install -e ".[train]"
-python scripts/train_ppo_demo.py
+# Inspect the shipped reference corpus
+ebit-gym inspect-taskset corpora/reference-v0/manifest.json
+
+# Run a mock model against the quick split (offline, no API key needed)
+ebit-gym eval \
+  --task-set corpora/reference-v0/manifest.json \
+  --model mock:default \
+  --split quick
+
+# Run a real model (needs ANTHROPIC_API_KEY)
+ebit-gym eval \
+  --task-set corpora/reference-v0/manifest.json \
+  --model anthropic:claude-4.6-sonnet \
+  --split auto_gradable \
+  --output runs/claude_v1.json
+
+# Export passing attempts as OpenAI fine-tune training data
+ebit-gym eval \
+  --task-set corpora/reference-v0/manifest.json \
+  --model anthropic:claude-4.6-sonnet \
+  --output runs/claude_v1.json \
+  --export openai \
+  --export-path runs/finetune.jsonl
 ```
 
-This runs a 2048-timestep PPO training pass and prints a tearsheet (total
-return, Sharpe, Sortino, max drawdown, turnover) against a random baseline.
-Both lose money on the default synthetic data — that's the env being honest
-about costs, not a bug. See the script docstring for why.
-
-### Real data
+Python API:
 
 ```python
-from ebit_gym.data import YFinanceOHLCV
+from ebit_gym.core import TaskSet
+from ebit_gym.core.runner import AttemptRunner
+from ebit_gym.core.grader import make_grader
+from ebit_gym.core.model import make_model
+import ebit_gym.graders  # registers reference graders
+import ebit_gym.models    # registers reference adapters
 
-data = YFinanceOHLCV("SPY", start="2015-01-01", end="2024-12-31").load()
+taskset = TaskSet.model_validate_json(open("corpora/reference-v0/manifest.json").read())
+model = make_model("anthropic:claude-4.6-sonnet")
+runner = AttemptRunner(model)
+
+for task in taskset.tasks:
+    attempt = runner.run(task)
+    if task.grader_spec.type != "llm_judge":  # llm_judge needs runtime callable
+        grader = make_grader(task.grader_spec)
+        result = grader.grade(task, attempt)
+        print(task.metadata.task_id, result.score, result.passed)
 ```
 
-Requires the `[data]` extra.
+## What's in the reference corpus
 
-### Walk-forward backtest on SPY
+`corpora/reference-v0/manifest.json` — ten tasks, demonstrating the platform:
+
+| Task ID | Domain | Language | Grader |
+|---|---|---|---|
+| q-bond-pv-001 | finance.quant.bonds | en | exact_match (numeric tolerance) |
+| q-bs-call-001 | finance.quant.options | en | exact_match (numeric tolerance) |
+| q-acct-ratio-001 | finance.accounting | en | exact_match (numeric tolerance) |
+| q-ko-bond-001 | finance.korean.bonds | ko | exact_match |
+| q-ko-culture-001 | language.korean.culture | ko | human |
+| q-ko-idiom-001 | language.korean.reasoning | ko | human |
+| q-ja-math-001 | math.basic | ja | exact_match |
+| q-currency-001 | language.keyword | en | regex |
+| q-deal-memo-001 | finance.banking.deal | en | composite |
+| q-trading-syn-001 | finance.trading.single_asset | en | exact_match (numeric tolerance) |
+
+Production corpora are 100–10,000× larger and curated under separate
+confidentiality agreements with domain experts on contract.
+
+Regenerate with:
 
 ```bash
-pip install -e ".[data,train]"
-python scripts/spy_tearsheet.py
+python scripts/build_reference_corpus.py
 ```
-
-Trains a continuous-action PPO on an expanding walk-forward split of SPY
-2015-2024 (5 folds, daily) and prints per-fold and aggregate out-of-sample
-metrics against a buy-and-hold baseline:
-
-```
-=== aggregate out-of-sample ===
-                     PPO             B&H
-    total_return        -0.4198        +1.7652
-          sharpe        -0.4497        +0.8135
-         sortino        -0.6047        +0.9623
-          max_dd        -0.4569        -0.3382
-```
-
-PPO loses to B&H — this is expected and honest. With only ~10k training
-steps per fold, 5 raw OHLCV features, and a shallow MLP, there is nowhere
-near enough capacity to extract a tradeable signal against a 10-year bull
-market. What the script *does* prove:
-
-- No train/eval leakage (walk-forward is correct)
-- Transaction costs are charged on every position change
-- Metrics are computed against a held-out segment, not training data
-- The same harness will surface a real signal once you bring richer
-  features, a longer training budget, and a model with capacity to match.
-
-That distinction — "honest harness with weak baseline" vs "rigged harness
-with cherry-picked Sharpe" — is the value of using `ebit-gym` over a
-hand-rolled backtest.
-
-## Design
-
-- **Env API:** Gymnasium-compatible (`reset`, `step`, `observation_space`, `action_space`).
-- **Observations:** windowed OHLCV (close-normalized) plus current position, flattened to `Box`.
-- **Actions:** either `Discrete(N)` over a custom position grid (default `{flat, long, short}`; pass e.g. `[-1, -0.5, 0, 0.5, 1]` for sized) or continuous `Box([-1, 1])` for sizing.
-- **Reward:** position-weighted bar return, net of proportional transaction cost and slippage.
-- **Frictions:** transaction cost and slippage are baked in by default — silent zero-cost backtests are the most common bug in financial RL.
-- **Backtesting:** `WalkForward` produces ordered (train, eval) folds in expanding or rolling mode for methodologically-correct out-of-sample evaluation.
-- **Reproducibility:** seeded RNG, deterministic synthetic data, no hidden time-leakage.
-
-## Roadmap
-
-- **v0.1** (current): single-asset env (discrete + continuous actions), synthetic + yfinance data, walk-forward harness, eval metrics, SB3 PPO demo, SPY tearsheet.
-- **v0.2:** multi-asset portfolio env, CLI (`ebit-gym train ...`), docs site, richer observation features (technicals, regime indicators).
-- **v1.0:** API stabilization, PyPI release.
-- **v2:** hosted platform — bring-your-own data, managed training runs, signal/policy export.
 
 ## Layout
 
 ```
 src/ebit_gym/
-  envs/          Gymnasium environments
-  data/          OHLCV data sources (synthetic in core; yfinance under [data])
-  backtest/      Walk-forward and other train/eval split harnesses
-  eval/          Risk-adjusted metrics (Sharpe, Sortino, max DD, turnover)
-  wrappers/      Reserved for env wrappers (normalization, time-limits, ...)
-scripts/         Runnable demos (PPO smoke test, SPY tearsheet)
-tests/           pytest tests — run with `pytest`
+  core/                    Schemas + abstract interfaces (Task, Grader, Model, Runner, Export)
+  graders/                 Reference graders (exact, regex, llm_judge, composite, human)
+  models/                  Reference adapters (OpenAI, Anthropic, Upstage, Mock)
+  tasks/                   Concrete task factories (trading + future domains)
+  envs/                    Legacy v0.1 RL env, available for sequential training
+  data/                    OHLCV data sources
+  backtest/                Walk-forward harness
+  eval/                    Risk-adjusted financial metrics (Sharpe, Sortino, etc.)
+  cli.py                   `ebit-gym` shell entry point
+
+corpora/
+  reference-v0/manifest.json  Shipped reference corpus (10 tasks)
+
+examples/
+  quickstart_taskset.json  Tiny 5-task demo for first-time CLI users
+
+scripts/
+  build_reference_corpus.py  Regenerates the reference corpus
+  spy_tearsheet.py           Legacy v0.1 RL walk-forward demo
+  train_ppo_demo.py          Legacy v0.1 RL training demo
+
+tests/                     127 tests, pytest + ruff in CI on 3.10/3.11/3.12
 ```
+
+## Status & roadmap
+
+**v0.2** (current): platform foundation. Schemas, graders, model adapters,
+runner, CLI, exports, reference corpus.
+
+**v0.3**: tool-using attempt protocols (so agents can browse/run code/query
+APIs as part of a task), async parallelism over large task sets, reviewer
+workbench v1 (real UI for the human-grader queue), HyperCLOVA adapter,
+PyPI release.
+
+**v0.4**: synthetic task generation pipeline (LLM-drafted, human-verified —
+the standard pattern for scaling to 5,000+ tasks per domain), reward-model
+training utilities, lab-side integration adapters.
+
+**v1.0**: API stability. First production corpora under customer contracts.
 
 ## License
 
