@@ -4,8 +4,8 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from ebit_gym import WalkForward
-from ebit_gym.data import SyntheticOHLCV
+from omniforge import WalkForward
+from omniforge.data import SyntheticOHLCV
 
 
 def _df(n: int = 1200) -> pd.DataFrame:

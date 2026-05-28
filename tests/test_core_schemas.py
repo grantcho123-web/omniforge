@@ -13,7 +13,7 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from ebit_gym.core import (
+from omniforge.core import (
     Attempt,
     AttemptCost,
     GraderSpec,
@@ -31,7 +31,7 @@ def _make_task(task_id: str = "q-001") -> Task:
             task_id=task_id,
             domain="finance.quant.interview",
             difficulty="medium",
-            author="alice@ebit",
+            author="alice@example.com",
             tags=["combinatorics"],
         ),
         prompt="Compute the expected number of coin flips until two heads in a row.",
@@ -55,7 +55,7 @@ def test_taskset_roundtrip_with_splits():
         description="Reference quant interview questions.",
         tasks=[_make_task("q-001"), _make_task("q-002")],
         splits={"train": ["q-001"], "eval": ["q-002"]},
-        provenance={"author_org": "ebit", "license": "Apache-2.0"},
+        provenance={"author_org": "example-org", "license": "Apache-2.0"},
     )
     blob = ts.model_dump_json()
     ts2 = TaskSet.model_validate_json(blob)

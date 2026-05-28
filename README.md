@@ -1,10 +1,10 @@
-# ebit-gym
+# omniforge
 
-[![ci](https://github.com/grantcho123-web/ebit-gym/actions/workflows/ci.yml/badge.svg)](https://github.com/grantcho123-web/ebit-gym/actions/workflows/ci.yml)
+[![ci](https://github.com/grantcho123-web/omniforge/actions/workflows/ci.yml/badge.svg)](https://github.com/grantcho123-web/omniforge/actions/workflows/ci.yml)
 
 **RL data infrastructure for AI labs, built by [ebit](https://ebitglobal.ai).**
 
-ebit-gym is the open-source platform behind ebit's RL data offering — the
+omniforge is the open-source platform behind ebit's RL data offering — the
 same shape of product Scale AI, Mercor, and Surge sell to frontier AI labs,
 focused on East Asian languages and finance and graded by domain experts.
 
@@ -19,7 +19,7 @@ A frontier AI lab training the next generation of LLMs needs three things:
 3. A **platform** that lets the lab run their model over the corpus, capture
    graded attempts, and export training-ready data in their fine-tune format.
 
-ebit-gym is open-source piece #3. Pieces #1 and #2 — the curated corpora and
+omniforge is open-source piece #3. Pieces #1 and #2 — the curated corpora and
 the expert workforce — are what ebit sells, with the platform as the
 visible credential.
 
@@ -42,7 +42,7 @@ breadth.
 
 ```
                    ┌──────────────────────────┐
-                   │  ebit-gym  CLI / API     │
+                   │  omniforge  CLI / API     │
                    └────────────┬─────────────┘
                                 │
                    ┌────────────┴─────────────┐
@@ -76,7 +76,7 @@ breadth.
                    └──────────────────────────┘
 ```
 
-Everything inside ebit-gym speaks four versioned types: `Task`, `TaskSet`,
+Everything inside omniforge speaks four versioned types: `Task`, `TaskSet`,
 `Attempt`, `GradingResult`. Adding a new model provider, grader, task
 domain, or export format is a single self-contained file.
 
@@ -98,23 +98,23 @@ PyPI release lands with v0.2.1.
 
 ```bash
 # Inspect the shipped reference corpus
-ebit-gym inspect-taskset corpora/reference-v0/manifest.json
+omniforge inspect-taskset corpora/reference-v0/manifest.json
 
 # Run a mock model against the quick split (offline, no API key needed)
-ebit-gym eval \
+omniforge eval \
   --task-set corpora/reference-v0/manifest.json \
   --model mock:default \
   --split quick
 
 # Run a real model (needs ANTHROPIC_API_KEY)
-ebit-gym eval \
+omniforge eval \
   --task-set corpora/reference-v0/manifest.json \
   --model anthropic:claude-4.6-sonnet \
   --split auto_gradable \
   --output runs/claude_v1.json
 
 # Export passing attempts as OpenAI fine-tune training data
-ebit-gym eval \
+omniforge eval \
   --task-set corpora/reference-v0/manifest.json \
   --model anthropic:claude-4.6-sonnet \
   --output runs/claude_v1.json \
@@ -125,12 +125,12 @@ ebit-gym eval \
 Python API:
 
 ```python
-from ebit_gym.core import TaskSet
-from ebit_gym.core.runner import AttemptRunner
-from ebit_gym.core.grader import make_grader
-from ebit_gym.core.model import make_model
-import ebit_gym.graders  # registers reference graders
-import ebit_gym.models    # registers reference adapters
+from omniforge.core import TaskSet
+from omniforge.core.runner import AttemptRunner
+from omniforge.core.grader import make_grader
+from omniforge.core.model import make_model
+import omniforge.graders  # registers reference graders
+import omniforge.models    # registers reference adapters
 
 taskset = TaskSet.model_validate_json(open("corpora/reference-v0/manifest.json").read())
 model = make_model("anthropic:claude-4.6-sonnet")
@@ -173,7 +173,7 @@ python scripts/build_reference_corpus.py
 ## Layout
 
 ```
-src/ebit_gym/
+src/omniforge/
   core/                    Schemas + abstract interfaces (Task, Grader, Model, Runner, Export)
   graders/                 Reference graders (exact, regex, llm_judge, composite, human)
   models/                  Reference adapters (OpenAI, Anthropic, Upstage, Mock)
@@ -182,7 +182,7 @@ src/ebit_gym/
   data/                    OHLCV data sources
   backtest/                Walk-forward harness
   eval/                    Risk-adjusted financial metrics (Sharpe, Sortino, etc.)
-  cli.py                   `ebit-gym` shell entry point
+  cli.py                   `omniforge` shell entry point
 
 corpora/
   reference-v0/manifest.json  Shipped reference corpus (10 tasks)

@@ -9,12 +9,12 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-# Importing ebit_gym.graders registers the reference graders so make_grader works.
-import ebit_gym.graders  # noqa: F401
-from ebit_gym.core.runner import AttemptRunner
-from ebit_gym.data.sources import SyntheticOHLCV
-from ebit_gym.models.mock import MockAdapter
-from ebit_gym.tasks.trading import SimulatedTradingTaskBuilder, score_position
+# Importing omniforge.graders registers the reference graders so make_grader works.
+import omniforge.graders  # noqa: F401
+from omniforge.core.runner import AttemptRunner
+from omniforge.data.sources import SyntheticOHLCV
+from omniforge.models.mock import MockAdapter
+from omniforge.tasks.trading import SimulatedTradingTaskBuilder, score_position
 
 
 def _data(n: int = 200, seed: int = 0) -> pd.DataFrame:
@@ -167,7 +167,7 @@ def test_trading_task_runs_through_attempt_runner():
 
     for task in (task1, task2):
         attempt = runner.run(task)
-        from ebit_gym.core.grader import make_grader
+        from omniforge.core.grader import make_grader
 
         grader = make_grader(task.grader_spec)
         result = grader.grade(task, attempt)

@@ -15,10 +15,10 @@ from types import SimpleNamespace
 import pytest
 
 # Importing this registers all built-in adapters.
-import ebit_gym.models  # noqa: F401
-from ebit_gym.core.model import make_model, registered_models
-from ebit_gym.models._pricing import PRICING, estimate_usd
-from ebit_gym.models.mock import MockAdapter
+import omniforge.models  # noqa: F401
+from omniforge.core.model import make_model, registered_models
+from omniforge.models._pricing import PRICING, estimate_usd
+from omniforge.models.mock import MockAdapter
 
 # ----------------------------------------------------------------- registry
 
@@ -98,7 +98,7 @@ def test_mock_returns_token_counts():
 def test_openai_adapter_call_shape(monkeypatch):
     """Verify the OpenAI adapter produces a well-shaped ModelResponse
     given a stubbed SDK client. No real network call."""
-    from ebit_gym.models.openai_adapter import OpenAIAdapter
+    from omniforge.models.openai_adapter import OpenAIAdapter
 
     fake_response = SimpleNamespace(
         choices=[
@@ -125,7 +125,7 @@ def test_openai_adapter_call_shape(monkeypatch):
 
 
 def test_openai_adapter_surfaces_errors_via_field(monkeypatch):
-    from ebit_gym.models.openai_adapter import OpenAIAdapter
+    from omniforge.models.openai_adapter import OpenAIAdapter
 
     def boom(**_):
         raise RuntimeError("network down")
@@ -143,7 +143,7 @@ def test_openai_adapter_surfaces_errors_via_field(monkeypatch):
 
 
 def test_anthropic_adapter_call_shape(monkeypatch):
-    from ebit_gym.models.anthropic_adapter import AnthropicAdapter
+    from omniforge.models.anthropic_adapter import AnthropicAdapter
 
     fake_response = SimpleNamespace(
         content=[SimpleNamespace(type="text", text="42.")],
@@ -164,7 +164,7 @@ def test_anthropic_adapter_call_shape(monkeypatch):
 
 def test_anthropic_adapter_concatenates_text_blocks(monkeypatch):
     """Anthropic can return multiple content blocks; we join the text ones."""
-    from ebit_gym.models.anthropic_adapter import AnthropicAdapter
+    from omniforge.models.anthropic_adapter import AnthropicAdapter
 
     fake_response = SimpleNamespace(
         content=[
@@ -186,7 +186,7 @@ def test_anthropic_adapter_concatenates_text_blocks(monkeypatch):
 
 def test_upstage_adapter_uses_upstage_base_url():
     """Upstage adapter must route through Upstage's API endpoint, not OpenAI's."""
-    from ebit_gym.models.upstage import UPSTAGE_BASE_URL, UpstageAdapter
+    from omniforge.models.upstage import UPSTAGE_BASE_URL, UpstageAdapter
 
     a = UpstageAdapter(model="solar-pro", api_key="dummy")
     # The inner OpenAI client should have been configured with Upstage's base URL.

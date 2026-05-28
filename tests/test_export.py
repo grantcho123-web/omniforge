@@ -4,12 +4,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ebit_gym.core.export import (
+from omniforge.core.export import (
     export_anthropic_jsonl,
     export_generic_jsonl,
     export_openai_finetune_jsonl,
 )
-from ebit_gym.core.task import (
+from omniforge.core.task import (
     Attempt,
     GraderSpec,
     GradingResult,

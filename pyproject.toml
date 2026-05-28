@@ -3,13 +3,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "ebit-gym"
+name = "omniforge"
 version = "0.2.0"
 description = "RL data platform for AI labs — task corpora, graders, model adapters, and eval harnesses."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
-authors = [{ name = "ebit" }]
+authors = [{ name = "grantcho" }]
 keywords = [
     "reinforcement-learning",
     "rlhf",
@@ -42,14 +42,14 @@ models = ["openai>=1.30", "anthropic>=0.34"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [project.urls]
-Homepage = "https://github.com/grantcho123-web/ebit-gym"
-Issues = "https://github.com/grantcho123-web/ebit-gym/issues"
+Homepage = "https://github.com/grantcho123-web/omniforge"
+Issues = "https://github.com/grantcho123-web/omniforge/issues"
 
 [project.scripts]
-ebit-gym = "ebit_gym.cli:main"
+omniforge = "omniforge.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/ebit_gym"]
+packages = ["src/omniforge"]
 
 [tool.ruff]
 line-length = 100

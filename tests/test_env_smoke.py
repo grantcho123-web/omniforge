@@ -11,9 +11,9 @@ import numpy as np
 import pytest
 from gymnasium import spaces
 
-from ebit_gym import SingleAssetTradingEnv
-from ebit_gym.data import SyntheticOHLCV
-from ebit_gym.envs.single_asset import TradingConfig
+from omniforge import SingleAssetTradingEnv
+from omniforge.data import SyntheticOHLCV
+from omniforge.envs.single_asset import TradingConfig
 
 
 def _make_env(seed: int = 0, **kwargs) -> SingleAssetTradingEnv:

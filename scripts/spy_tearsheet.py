@@ -19,10 +19,10 @@ import argparse
 
 import numpy as np
 
-from ebit_gym import SingleAssetTradingEnv, WalkForward
-from ebit_gym.data import YFinanceOHLCV
-from ebit_gym.envs.single_asset import TradingConfig
-from ebit_gym.eval import max_drawdown, sharpe, sortino, total_return, turnover
+from omniforge import SingleAssetTradingEnv, WalkForward
+from omniforge.data import YFinanceOHLCV
+from omniforge.envs.single_asset import TradingConfig
+from omniforge.eval import max_drawdown, sharpe, sortino, total_return, turnover
 
 PERIODS_PER_YEAR_DAILY = 252
 

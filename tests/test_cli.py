@@ -11,8 +11,8 @@ from pathlib import Path
 
 import pytest
 
-from ebit_gym.cli import main
-from ebit_gym.core import GraderSpec, Task, TaskMetadata, TaskSet
+from omniforge.cli import main
+from omniforge.core import GraderSpec, Task, TaskMetadata, TaskSet
 
 
 def _write_taskset(path: Path) -> TaskSet:

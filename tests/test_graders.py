@@ -6,13 +6,13 @@ import logging
 import pytest
 
 # Importing this registers all built-in graders.
-import ebit_gym.graders  # noqa: F401
-from ebit_gym.core import Attempt, GraderSpec, Task, TaskMetadata
-from ebit_gym.core.grader import make_grader, registered_graders
-from ebit_gym.graders.composite import CompositeGrader
-from ebit_gym.graders.exact import ExactMatchGrader
-from ebit_gym.graders.llm_judge import LLMJudgeGrader
-from ebit_gym.graders.regex import RegexGrader
+import omniforge.graders  # noqa: F401
+from omniforge.core import Attempt, GraderSpec, Task, TaskMetadata
+from omniforge.core.grader import make_grader, registered_graders
+from omniforge.graders.composite import CompositeGrader
+from omniforge.graders.exact import ExactMatchGrader
+from omniforge.graders.llm_judge import LLMJudgeGrader
+from omniforge.graders.regex import RegexGrader
 
 
 def _task(

@@ -11,8 +11,8 @@ The corpus is intentionally small (10 tasks) and diverse:
   composite, human)
 - One task generated from SimulatedTradingTaskBuilder so the trading
   task type is represented
-- Splits for 'quick' iteration, 'auto_gradable' for CLI demos,
-  'korean' for the GTM beachhead
+- Splits for 'quick' iteration, 'auto_gradable' for CLI demos, and
+  'korean' for the Korean-language subset
 
 This script is the source of truth. The committed manifest.json is
 its output — regenerate after any edit.
@@ -23,14 +23,14 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ebit_gym.core.task import (
+from omniforge.core.task import (
     GraderSpec,
     Task,
     TaskMetadata,
     TaskSet,
 )
-from ebit_gym.data.sources import SyntheticOHLCV
-from ebit_gym.tasks.trading import SimulatedTradingTaskBuilder
+from omniforge.data.sources import SyntheticOHLCV
+from omniforge.tasks.trading import SimulatedTradingTaskBuilder
 
 OUT_DIR = Path("corpora/reference-v0")
 OUT_PATH = OUT_DIR / "manifest.json"
@@ -42,7 +42,7 @@ def _meta(
     task_id: str,
     domain: str,
     difficulty: str = "medium",
-    author: str = "ebit-reference-v0",
+    author: str = "omniforge-reference-v0",
     tags: list[str] | None = None,
     language: str = "en",
 ) -> TaskMetadata:
@@ -293,7 +293,7 @@ def trading_task() -> Task:
             "metadata": task.metadata.model_copy(
                 update={
                     "task_id": "q-trading-syn-001",
-                    "author": "ebit-reference-v0",
+                    "author": "omniforge-reference-v0",
                     "created_at": NOW,
                     "tags": ["trading", "ohlcv", "synthetic"],
                 }
@@ -316,10 +316,10 @@ def build_taskset() -> TaskSet:
     all_ids = [t.metadata.task_id for t in tasks]
 
     return TaskSet(
-        name="ebit-reference-v0",
+        name="omniforge-reference-v0",
         version="0.1.0",
         description=(
-            "Reference corpus shipped with ebit-gym v0.2. Ten tasks spanning "
+            "Reference corpus shipped with omniforge v0.2. Ten tasks spanning "
             "English / Korean / Japanese finance and language reasoning, "
             "exercising every reference grader type. Demonstrates the "
             "platform — not a production eval corpus."
@@ -332,14 +332,10 @@ def build_taskset() -> TaskSet:
             "all": all_ids,
         },
         provenance={
-            "author_org": "ebit",
             "license": "Apache-2.0",
             "build_script": "scripts/build_reference_corpus.py",
             "build_date": NOW.isoformat(),
-            "note": (
-                "Demo / smoke-test corpus. Production corpora are curated by "
-                "domain experts under separate confidentiality agreements."
-            ),
+            "note": "Reference / smoke-test corpus.",
         },
     )
 

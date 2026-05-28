@@ -1,5 +1,5 @@
 {
-  "name": "ebit-gym-quickstart",
+  "name": "omniforge-quickstart",
   "version": "0.1.0",
   "schema_version": "0.2.0",
   "description": "Tiny five-task demo for first-time CLI users. Not a real corpus — exercises every reference grader type.",
@@ -130,8 +130,7 @@
     "all": ["q-arith-1", "q-bond-pv-1", "q-keyword-1", "q-composite-1", "q-essay-ko-1"]
   },
   "provenance": {
-    "author_org": "ebit",
     "license": "Apache-2.0",
-    "note": "Quickstart demo only — not a real eval corpus. Replaced by corpora/reference-v0/ in Task #8."
+    "note": "Quickstart demo only — not a real eval corpus. See corpora/reference-v0/ for the canonical reference set."
   }
 }

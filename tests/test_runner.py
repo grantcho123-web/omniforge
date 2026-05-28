@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import pytest
 
-from ebit_gym.core import GraderSpec, Task, TaskMaterial, TaskMetadata, TaskSet
-from ebit_gym.core.runner import AttemptRunner, RunnerConfig
-from ebit_gym.models.mock import MockAdapter
+from omniforge.core import GraderSpec, Task, TaskMaterial, TaskMetadata, TaskSet
+from omniforge.core.runner import AttemptRunner, RunnerConfig
+from omniforge.models.mock import MockAdapter
 
 
 def _task(task_id: str = "t-1", materials: list[TaskMaterial] | None = None) -> Task:

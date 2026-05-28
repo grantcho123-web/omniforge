@@ -13,9 +13,9 @@ from pathlib import Path
 import pytest
 
 # Importing graders registers them so make_grader works.
-import ebit_gym.graders  # noqa: F401
-from ebit_gym.core.grader import make_grader
-from ebit_gym.core.task import TaskSet
+import omniforge.graders  # noqa: F401
+from omniforge.core.grader import make_grader
+from omniforge.core.task import TaskSet
 
 MANIFEST = Path(__file__).resolve().parents[1] / "corpora" / "reference-v0" / "manifest.json"
 
@@ -34,7 +34,7 @@ def taskset() -> TaskSet:
 
 def test_corpus_has_expected_size(taskset):
     assert len(taskset.tasks) == 10
-    assert taskset.name == "ebit-reference-v0"
+    assert taskset.name == "omniforge-reference-v0"
 
 
 def test_all_task_ids_unique(taskset):
