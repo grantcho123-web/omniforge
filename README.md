@@ -150,6 +150,32 @@ Regenerate with:
 python scripts/build_reference_corpus.py
 ```
 
+## Discriminating corpus
+
+`corpora/discriminating-v0/manifest.json` — fifteen harder tasks
+intended to surface real disagreement between frontier models. Where
+the reference corpus is the "platform works" demo (every modern LLM
+passes everything), this one targets multi-step quant, formula recall,
+probability traps, and multilingual reasoning that combines language
+fluency with domain knowledge.
+
+Splits: `finance` (6 tasks), `puzzles` (3), `probability` (3),
+`multilingual` (3), `quick` (3 for fast iteration), `all` (15).
+
+```bash
+omniforge eval --task-set corpora/discriminating-v0/manifest.json \
+  --model anthropic:claude-haiku-4-5 --split all --output runs/haiku_hard.json
+omniforge eval --task-set corpora/discriminating-v0/manifest.json \
+  --model anthropic:claude-sonnet-4-5 --split all --output runs/sonnet_hard.json
+python scripts/compare_runs.py runs/haiku_hard.json runs/sonnet_hard.json
+```
+
+Regenerate with:
+
+```bash
+python scripts/build_discriminating_corpus.py
+```
+
 ## Layout
 
 ```

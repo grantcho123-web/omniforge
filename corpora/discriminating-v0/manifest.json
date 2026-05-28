@@ -1,0 +1,461 @@
+{
+  "name": "omniforge-discriminating-v0",
+  "version": "0.1.0",
+  "schema_version": "0.2.0",
+  "description": "Harder 15-task corpus intended to surface real disagreement between frontier models. Mix of multi-step quant, formula recall, probability traps, and multilingual reasoning that combines language fluency with domain knowledge.",
+  "tasks": [
+    {
+      "metadata": {
+        "task_id": "f-ytm-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.bonds",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "ytm",
+          "iterative"
+        ],
+        "language": "en"
+      },
+      "prompt": "A 10-year corporate bond pays a $40 annual coupon on a $1,000 face value. It currently trades at $920. What is its yield to maturity? Answer as a percentage to 2 decimal places (e.g., 5.25).",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.1
+        }
+      },
+      "reference_answer": "5.04",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "f-beta-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.statistics",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "beta",
+          "covariance"
+        ],
+        "language": "en"
+      },
+      "prompt": "Compute the beta of asset A relative to market M, given these 5 monthly returns:\n  A: [0.02, -0.03, 0.05, 0.01, -0.02]\n  M: [0.01, -0.02, 0.03, 0.005, -0.015]\nBeta = Cov(A, M) / Var(M). Answer to 2 decimal places.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.1
+        }
+      },
+      "reference_answer": "1.59",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "f-dcf-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.valuation",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "dcf",
+          "multi-period"
+        ],
+        "language": "en"
+      },
+      "prompt": "A project's projected free cash flows are: Year 1 = $100M, Year 2 = $120M, Year 3 = $150M. The terminal value at end of Year 3 is $1,500M. The discount rate is 10%. Compute the present value of the project in $M, rounded to the nearest whole number. Answer with just the number (no units).",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 5.0
+        }
+      },
+      "reference_answer": "1430",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "f-bs-put-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.options",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "black-scholes",
+          "put"
+        ],
+        "language": "en"
+      },
+      "prompt": "Compute the Black-Scholes European put option price with:\n  Spot S = 100\n  Strike K = 110\n  Risk-free rate r = 0.05 (continuous compounding)\n  Time to maturity T = 1 year\n  Volatility sigma = 0.25\n  No dividends.\nRound to 2 decimal places. Answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.5
+        }
+      },
+      "reference_answer": "12.66",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "f-duration-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.bonds",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "duration",
+          "macaulay"
+        ],
+        "language": "en"
+      },
+      "prompt": "Compute the Macaulay duration of a 3-year bond paying $50 annual coupons on $1,000 face value, with the market yield at 5%. Macaulay duration in years, rounded to 2 decimal places. Answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.05
+        }
+      },
+      "reference_answer": "2.86",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "f-hedge-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.hedging",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "hedge-ratio"
+        ],
+        "language": "en"
+      },
+      "prompt": "An airline wants to hedge jet fuel cost exposure using crude oil futures. Given:\n  Std dev of jet fuel returns = 0.15\n  Std dev of crude oil returns = 0.12\n  Correlation between jet fuel and crude = 0.85\nWhat is the optimal hedge ratio (units of crude oil per unit of jet fuel)? Round to 2 decimal places. Answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.02
+        }
+      },
+      "reference_answer": "1.06",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "p-monty-5-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "logic.probability",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "monty-hall",
+          "probability"
+        ],
+        "language": "en"
+      },
+      "prompt": "In a 5-door Monty Hall variant: one door hides a car, four hide goats. You pick a door. The host (who knows what's behind every door) opens 3 of the remaining 4 doors, all revealing goats. You can keep your original choice or switch to the one unopened door you didn't pick. If you switch, what is your probability of winning the car? Answer as a decimal to 3 decimal places.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.01
+        }
+      },
+      "reference_answer": "0.800",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "p-fence-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "logic.counting",
+        "difficulty": "medium",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "counting"
+        ],
+        "language": "en"
+      },
+      "prompt": "A square fence has sides of 10 meters each. Wooden posts are placed every 2 meters along each side, including at every corner. How many posts are there in total? Answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.5
+        }
+      },
+      "reference_answer": "20",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "p-knight-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "logic.chess",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "chess",
+          "shortest-path"
+        ],
+        "language": "en"
+      },
+      "prompt": "A knight on a standard 8x8 chessboard starts at corner a1. What is the minimum number of moves required to reach the opposite corner h8? A knight moves in an L-shape: 2 squares in one direction (horizontal or vertical) and 1 square in the perpendicular direction. Answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.5
+        }
+      },
+      "reference_answer": "6",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "pr-medical-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "logic.probability.bayes",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "base-rate",
+          "bayes"
+        ],
+        "language": "en"
+      },
+      "prompt": "A medical test for a rare disease has 99% sensitivity (true positive rate) and 99% specificity (true negative rate). The disease occurs in 1 out of every 10,000 people. A randomly selected person from the general population tests positive. What is the probability they actually have the disease? Answer as a decimal to 4 decimal places.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.001
+        }
+      },
+      "reference_answer": "0.0098",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "pr-birthday-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "logic.probability",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "birthday-paradox"
+        ],
+        "language": "en"
+      },
+      "prompt": "In a group of 23 people, what is the probability that at least two share the same birthday? Assume 365 days, uniformly distributed, no leap years. Answer as a decimal to 3 decimal places.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.01
+        }
+      },
+      "reference_answer": "0.507",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "pr-bayes-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "logic.probability.bayes",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "bayes",
+          "spam"
+        ],
+        "language": "en"
+      },
+      "prompt": "10% of emails arriving in an inbox are spam. 90% of spam emails contain the word 'free'. 5% of legitimate (non-spam) emails contain the word 'free'. An email contains the word 'free'. What is the probability that it is spam? Answer as a decimal to 3 decimal places.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.01
+        }
+      },
+      "reference_answer": "0.667",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "ko-related-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.korean.kifrs",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "korean",
+          "kifrs",
+          "multiple-choice"
+        ],
+        "language": "ko"
+      },
+      "prompt": "한국채택국제회계기준(K-IFRS) 제1024호 '특수관계자 공시'에 따를 때, 다음 중 회사의 '특수관계자'에 일반적으로 해당하지 않는 사람은 누구입니까?\nA) 회사의 최대주주\nB) 회사 주요 경영진의 배우자\nC) 회사의 일반 직원\nD) 회사의 종속기업의 임원\n정답의 알파벳 한 글자만 답하세요.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {}
+      },
+      "reference_answer": "C",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "ja-keigo-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "language.japanese.keigo",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "japanese",
+          "keigo",
+          "multiple-choice"
+        ],
+        "language": "ja"
+      },
+      "prompt": "ビジネスメールで、上司から送付された資料を「読んで内容を確認した」と 返信する際に、最も丁寧で適切な表現はどれですか。\nA) 確認しました。\nB) 確認させていただきました。\nC) 確認致しました。\nD) 拝見いたしました。\n正解のアルファベット一文字だけで答えてください。",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {}
+      },
+      "reference_answer": "D",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "zh-pe-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.chinese.ratios",
+        "difficulty": "hard",
+        "author": "omniforge-discriminating-v0",
+        "created_at": "2026-05-28T00:00:00Z",
+        "tags": [
+          "chinese",
+          "pe-ratio"
+        ],
+        "language": "zh-CN"
+      },
+      "prompt": "某上市公司去年净利润为人民币5000万元，发行的总股本为1亿股，目前每股股价为30元。请计算该公司的市盈率（P/E ratio），保留一位小数。只回答数字。",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 1.0
+        }
+      },
+      "reference_answer": "60",
+      "rubric": null
+    }
+  ],
+  "splits": {
+    "quick": [
+      "f-dcf-001",
+      "p-fence-001",
+      "pr-bayes-001"
+    ],
+    "finance": [
+      "f-ytm-001",
+      "f-beta-001",
+      "f-dcf-001",
+      "f-bs-put-001",
+      "f-duration-001",
+      "f-hedge-001"
+    ],
+    "puzzles": [
+      "p-monty-5-001",
+      "p-fence-001",
+      "p-knight-001"
+    ],
+    "probability": [
+      "pr-medical-001",
+      "pr-birthday-001",
+      "pr-bayes-001"
+    ],
+    "multilingual": [
+      "ko-related-001",
+      "ja-keigo-001",
+      "zh-pe-001"
+    ],
+    "all": [
+      "f-ytm-001",
+      "f-beta-001",
+      "f-dcf-001",
+      "f-bs-put-001",
+      "f-duration-001",
+      "f-hedge-001",
+      "p-monty-5-001",
+      "p-fence-001",
+      "p-knight-001",
+      "pr-medical-001",
+      "pr-birthday-001",
+      "pr-bayes-001",
+      "ko-related-001",
+      "ja-keigo-001",
+      "zh-pe-001"
+    ]
+  },
+  "provenance": {
+    "license": "Apache-2.0",
+    "build_script": "scripts/build_discriminating_corpus.py",
+    "build_date": "2026-05-28T00:00:00+00:00",
+    "note": "Tasks hand-authored with answers verified analytically. If a model is marked wrong and the math/logic checks out, suspect the grader spec (extraction, tolerance) before assuming the model failed."
+  }
+}
