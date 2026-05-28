@@ -116,6 +116,82 @@ def test_exact_match_raises_when_no_answer_available():
         g.grade(_task(reference_answer=None), _attempt())
 
 
+def test_exact_match_extracts_number_from_markdown_response():
+    """Real-world LLM responses wrap answers in markdown and prose; the
+    grader extracts the last number from the response when plain float()
+    fails."""
+    g = make_grader(
+        GraderSpec(type="exact_match", config={"answer": "1027", "numeric_tolerance": 2.0})
+    )
+    response = (
+        "# 채권 현재가치 계산\n\nPV = 60/1.05 + 60/1.1025 + 1060/1.1576\n"
+        "PV = 57.14 + 54.42 + 916.27\nPV = 1,027.83\n\n**1028**"
+    )
+    r = g.grade(_task(), _attempt(raw=response))
+    assert r.passed
+    assert r.score == 1.0
+
+
+def test_exact_match_extracts_comma_grouped_numbers():
+    g = make_grader(
+        GraderSpec(type="exact_match", config={"answer": "1027", "numeric_tolerance": 1.0})
+    )
+    # Last number is "1,027.83" — should parse to 1027.83 after comma strip,
+    # within tolerance of 1027.
+    r = g.grade(_task(), _attempt(raw="The present value comes to 1,027.83 dollars."))
+    assert r.passed
+
+
+def test_exact_match_extracts_negative_numbers():
+    g = make_grader(
+        GraderSpec(type="exact_match", config={"answer": "-1.0", "numeric_tolerance": 0.1})
+    )
+    # Trading-style response that picks short
+    r = g.grade(
+        _task(reference_answer="-1.0"),
+        _attempt(raw="Trend looks bearish so I'd short here.\n\n**-1**"),
+    )
+    assert r.passed
+
+
+def test_exact_match_extract_picks_last_number():
+    """When multiple numbers appear, the last one wins — matches the
+    convention that CoT answers end with the final answer."""
+    g = make_grader(
+        GraderSpec(type="exact_match", config={"answer": "42", "numeric_tolerance": 0.5})
+    )
+    response = "Started with 100, halved to 50, gave away 8. Final answer: 42."
+    assert g.grade(_task(), _attempt(raw=response)).passed
+
+
+def test_exact_match_extract_disabled_keeps_strict_behavior():
+    """Setting extract_number=False reverts to the brittle behavior. Useful
+    when you want to penalize unformatted responses."""
+    g = make_grader(
+        GraderSpec(
+            type="exact_match",
+            config={
+                "answer": "1027",
+                "numeric_tolerance": 2.0,
+                "extract_number": False,
+            },
+        )
+    )
+    r = g.grade(_task(), _attempt(raw="**1028**"))
+    assert not r.passed
+    assert "unparseable" in (r.rationale or "")
+
+
+def test_exact_match_empty_response_still_fails():
+    """The fix shouldn't accidentally pass empty responses."""
+    g = make_grader(
+        GraderSpec(type="exact_match", config={"answer": "5", "numeric_tolerance": 0.5})
+    )
+    r = g.grade(_task(), _attempt(raw=""))
+    assert not r.passed
+    assert "unparseable" in (r.rationale or "")
+
+
 # --------------------------------------------------------------------- regex
 
 
