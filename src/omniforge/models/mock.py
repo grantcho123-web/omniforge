@@ -60,5 +60,8 @@ class MockAdapter(ModelAdapter):
 
 @register_model("mock:default")
 def _factory(**kwargs: object) -> MockAdapter:
-    # Default mock always returns "ok"; tests usually construct MockAdapter directly.
-    return MockAdapter(responses=["ok"], **kwargs)  # type: ignore[arg-type]
+    # Default mock always returns "ok" regardless of prompt — never exhausts,
+    # so a CLI eval against mock:default exercises the full grading path on
+    # every task. Tests that need controlled responses construct MockAdapter
+    # directly with the responses list they want.
+    return MockAdapter(respond_with=lambda _prompt: "ok", **kwargs)  # type: ignore[arg-type]

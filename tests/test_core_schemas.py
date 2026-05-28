@@ -103,7 +103,7 @@ def test_attempt_roundtrip():
         attempt_id="att-001",
         task_id="q-001",
         task_version="0.1.0",
-        model="anthropic:claude-4.6-sonnet",
+        model="anthropic:claude-sonnet-4-5",
         raw_response="The answer is 6.",
         parsed_answer="6",
         cost=AttemptCost(input_tokens=120, output_tokens=14, usd=0.0006),

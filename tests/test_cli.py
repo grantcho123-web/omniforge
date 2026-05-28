@@ -144,7 +144,7 @@ def test_eval_rejects_unknown_model(tmp_path, capsys):
 def test_list_models(capsys):
     main(["list-models"])
     out = capsys.readouterr().out
-    assert "anthropic:claude-4.6-sonnet" in out
+    assert "anthropic:claude-sonnet-4-5" in out
     assert "openai:gpt-4o-mini" in out
     assert "upstage:solar-pro" in out
 
@@ -195,13 +195,14 @@ def test_eval_with_export_writes_jsonl(tmp_path):
     )
     assert export_path.exists()
     lines = [line for line in export_path.read_text().splitlines() if line]
-    # mock:default only ships one response; the second task gets an
-    # "exhausted" error and is correctly dropped by the exporter.
-    # q-3 (llm_judge) is skipped at grading time. So exactly one record lands.
-    assert len(lines) == 1
-    payload = json.loads(lines[0])
-    assert payload["task_id"] == "q-1"
-    assert payload["completion"] == "ok"
+    # mock:default returns "ok" for every prompt — both auto-graded tasks
+    # produce attempts, both fail (score 0 since "ok" != "42" and "ok" has no
+    # "London"), and both land in the export because --export-include-failed
+    # is set. q-3 (llm_judge) is skipped at grading time so it doesn't land.
+    assert len(lines) == 2
+    payloads = [json.loads(line) for line in lines]
+    assert {p["task_id"] for p in payloads} == {"q-1", "q-2"}
+    assert all(p["completion"] == "ok" for p in payloads)
 
 
 def test_no_subcommand_errors():

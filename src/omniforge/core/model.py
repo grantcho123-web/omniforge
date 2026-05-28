@@ -10,7 +10,7 @@ attempts, judging in an LLM-judge grader, generating synthetic tasks,
 etc.
 
 Registry: adapters self-register under their provider:model id (e.g.,
-``"anthropic:claude-4.6-sonnet"``) so the CLI can look them up by string.
+``"anthropic:claude-sonnet-4-5"``) so the CLI can look them up by string.
 """
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ class ModelResponse:
 class ModelAdapter(ABC):
     """Provider-agnostic LLM client."""
 
-    #: Provider-qualified model id, e.g. ``"anthropic:claude-4.6-sonnet"``.
+    #: Provider-qualified model id, e.g. ``"anthropic:claude-sonnet-4-5"``.
     name: str = "abstract"
 
     @abstractmethod

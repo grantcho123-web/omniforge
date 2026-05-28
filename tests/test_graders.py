@@ -40,7 +40,7 @@ def _attempt(
         attempt_id=attempt_id,
         task_id=task_id,
         task_version="0.1.0",
-        model="anthropic:claude-4.6-sonnet",
+        model="anthropic:claude-sonnet-4-5",
         raw_response=raw,
         parsed_answer=parsed,
     )

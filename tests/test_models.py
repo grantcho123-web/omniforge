@@ -25,7 +25,7 @@ from omniforge.models.mock import MockAdapter
 
 def test_registry_contains_expected_models():
     names = registered_models()
-    assert "anthropic:claude-4.6-sonnet" in names
+    assert "anthropic:claude-sonnet-4-5" in names
     assert "openai:gpt-4o-mini" in names
     assert "upstage:solar-pro" in names
     assert "mock:default" in names
@@ -40,8 +40,8 @@ def test_make_model_rejects_unknown():
 
 
 def test_estimate_usd_known_model():
-    in_rate, out_rate = PRICING["anthropic:claude-4.6-sonnet"]
-    cost = estimate_usd("anthropic:claude-4.6-sonnet", 1_000_000, 1_000_000)
+    in_rate, out_rate = PRICING["anthropic:claude-sonnet-4-5"]
+    cost = estimate_usd("anthropic:claude-sonnet-4-5", 1_000_000, 1_000_000)
     assert cost == pytest.approx(in_rate + out_rate)
 
 
@@ -151,7 +151,7 @@ def test_anthropic_adapter_call_shape(monkeypatch):
         stop_reason="end_turn",
     )
 
-    a = AnthropicAdapter(model="claude-4.6-sonnet", api_key="dummy")
+    a = AnthropicAdapter(model="claude-sonnet-4-5", api_key="dummy")
     monkeypatch.setattr(a._client.messages, "create", lambda **_: fake_response)
     r = a.call("q", system="be brief")
 
@@ -175,7 +175,7 @@ def test_anthropic_adapter_concatenates_text_blocks(monkeypatch):
         usage=SimpleNamespace(input_tokens=1, output_tokens=1),
         stop_reason="end_turn",
     )
-    a = AnthropicAdapter(model="claude-4.6-sonnet", api_key="dummy")
+    a = AnthropicAdapter(model="claude-sonnet-4-5", api_key="dummy")
     monkeypatch.setattr(a._client.messages, "create", lambda **_: fake_response)
     r = a.call("q")
     assert r.raw_response == "Part one. Part two."

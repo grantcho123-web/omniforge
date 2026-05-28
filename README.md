@@ -92,14 +92,14 @@ omniforge eval \
 # Run a real model (needs ANTHROPIC_API_KEY)
 omniforge eval \
   --task-set corpora/reference-v0/manifest.json \
-  --model anthropic:claude-4.6-sonnet \
+  --model anthropic:claude-sonnet-4-5 \
   --split auto_gradable \
   --output runs/claude_v1.json
 
 # Export passing attempts as OpenAI fine-tune training data
 omniforge eval \
   --task-set corpora/reference-v0/manifest.json \
-  --model anthropic:claude-4.6-sonnet \
+  --model anthropic:claude-sonnet-4-5 \
   --output runs/claude_v1.json \
   --export openai \
   --export-path runs/finetune.jsonl
@@ -116,7 +116,7 @@ import omniforge.graders  # registers reference graders
 import omniforge.models   # registers reference adapters
 
 taskset = TaskSet.model_validate_json(open("corpora/reference-v0/manifest.json").read())
-model = make_model("anthropic:claude-4.6-sonnet")
+model = make_model("anthropic:claude-sonnet-4-5")
 runner = AttemptRunner(model)
 
 for task in taskset.tasks:

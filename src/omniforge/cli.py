@@ -7,7 +7,7 @@ Python::
     omniforge list-graders
     omniforge inspect-taskset corpora/reference-v0/manifest.json
     omniforge eval --task-set corpora/reference-v0/manifest.json \\
-                  --model anthropic:claude-4.6-sonnet \\
+                  --model anthropic:claude-sonnet-4-5 \\
                   --output runs/2026-05-22.json
 
 Limitations of v0:
@@ -53,7 +53,18 @@ def _grade_attempt(
     *,
     out: IO[str],
 ) -> GradingResult | None:
-    """Grade one attempt; returns None and prints a warning for unsupported graders."""
+    """Grade one attempt; returns None and prints a warning for unsupported graders.
+
+    Errored attempts (the model call itself failed) are skipped — they would
+    otherwise produce misleading 0.000 ✗ scores against an empty raw_response.
+    """
+    if attempt.error:
+        first_line = attempt.error.splitlines()[0]
+        print(
+            f"  [errored] task {task.metadata.task_id}: {first_line[:140]}",
+            file=out,
+        )
+        return None
     if task.grader_spec.type in _GRADERS_REQUIRING_RUNTIME:
         print(
             f"  [skipped] task {task.metadata.task_id} uses '{task.grader_spec.type}' grader "
@@ -209,11 +220,17 @@ def _print_summary(
     out: IO[str],
 ) -> None:
     scored = [r for _, _, r in results if r is not None]
+    errored = [(t, a) for t, a, r in results if r is None and a.error]
     print(f"{'TASK':<24} {'SCORE':>6}  {'PASS':>5}  GRADED_BY", file=out)
     print("-" * 60, file=out)
-    for task, _attempt, result in results:
+    for task, attempt, result in results:
         if result is None:
-            print(f"{task.metadata.task_id:<24} {'--':>6}  {'--':>5}  (skipped)", file=out)
+            label = "(errored)" if attempt.error else "(skipped)"
+            score_cell = "ERROR" if attempt.error else "--"
+            print(
+                f"{task.metadata.task_id:<24} {score_cell:>6}  {'--':>5}  {label}",
+                file=out,
+            )
             continue
         print(
             f"{task.metadata.task_id:<24} {result.score:>6.3f}  "
@@ -221,6 +238,12 @@ def _print_summary(
             file=out,
         )
     print("-" * 60, file=out)
+    if errored:
+        print(
+            f"Errored: {len(errored)} attempt(s) failed before grading "
+            "(see [errored] lines above for the cause).",
+            file=out,
+        )
     if scored:
         avg = sum(r.score for r in scored) / len(scored)
         passes = sum(1 for r in scored if r.passed)

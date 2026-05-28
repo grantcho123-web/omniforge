@@ -165,7 +165,7 @@ class Attempt(_Base):
     task_version: str = Field(..., description="Version of the task that was attempted.")
     model: str = Field(
         ...,
-        description="Provider-qualified model id, e.g. 'anthropic:claude-4.6-sonnet'.",
+        description="Provider-qualified model id, e.g. 'anthropic:claude-sonnet-4-5'.",
     )
     raw_response: str
     parsed_answer: str | None = Field(

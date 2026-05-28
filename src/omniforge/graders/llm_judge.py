@@ -4,7 +4,7 @@ Uses another LLM to score an attempt against a rubric. Config:
 
 * ``rubric``: the rubric text. Falls back to ``task.rubric`` if unset.
 * ``pass_threshold``: default ``0.7`` — score >= threshold counts as passed.
-* ``judge_model``: informational only here (e.g. ``"anthropic:claude-4.6-sonnet"``);
+* ``judge_model``: informational only here (e.g. ``"anthropic:claude-sonnet-4-5"``);
   the actual judge callable is injected at construction time.
 
 Construction:

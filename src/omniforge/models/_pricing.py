@@ -15,10 +15,9 @@ PRICING: dict[str, tuple[float, float]] = {
     "openai:gpt-4.1": (5.0, 15.0),
     "openai:o1": (15.0, 60.0),
     "openai:o1-mini": (3.0, 12.0),
-    # Anthropic
-    "anthropic:claude-4.6-sonnet": (3.0, 15.0),
-    "anthropic:claude-4.7-sonnet": (3.0, 15.0),
-    "anthropic:claude-4.5-haiku": (0.80, 4.0),
+    # Anthropic — IDs use dashes throughout: family before version, e.g. claude-haiku-4-5
+    "anthropic:claude-haiku-4-5": (1.0, 5.0),
+    "anthropic:claude-sonnet-4-5": (3.0, 15.0),
     "anthropic:claude-opus-4-5": (15.0, 75.0),
     # Upstage Solar
     "upstage:solar-pro": (0.50, 1.50),

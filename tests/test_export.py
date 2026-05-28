@@ -40,7 +40,7 @@ def _triple(
         attempt_id=f"att-{task_id}",
         task_id=task_id,
         task_version="0.1.0",
-        model="anthropic:claude-4.6-sonnet",
+        model="anthropic:claude-sonnet-4-5",
         raw_response=response,
         error=error,
     )
@@ -181,7 +181,7 @@ def test_generic_basic(tmp_path):
     assert lines[0]["completion"] == "42"
     assert lines[0]["score"] == 1.0
     assert lines[0]["passed"] is True
-    assert lines[0]["model"] == "anthropic:claude-4.6-sonnet"
+    assert lines[0]["model"] == "anthropic:claude-sonnet-4-5"
     assert lines[1]["passed"] is False
     assert lines[1]["score"] == 0.3
 

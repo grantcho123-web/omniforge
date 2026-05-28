@@ -82,7 +82,12 @@ class AnthropicAdapter(ModelAdapter):
         )
 
 
-for _model in ("claude-4.6-sonnet", "claude-4.7-sonnet", "claude-4.5-haiku", "claude-opus-4-5"):
+# Anthropic API model IDs use dashes throughout — family before version,
+# e.g. "claude-haiku-4-5". The undated aliases below point at the latest
+# snapshot of each tier. To see exactly what's available to your account, run:
+#   python -c "from anthropic import Anthropic; \\
+#       print('\\n'.join(m.id for m in Anthropic().models.list().data))"
+for _model in ("claude-haiku-4-5", "claude-sonnet-4-5", "claude-opus-4-5"):
 
     @register_model(f"anthropic:{_model}")
     def _factory(model: str = _model, **kwargs: object) -> AnthropicAdapter:  # noqa: B008
