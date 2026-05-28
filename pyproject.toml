@@ -45,6 +45,9 @@ dev = ["pytest>=8.0", "ruff>=0.5"]
 Homepage = "https://github.com/grantcho123-web/ebit-gym"
 Issues = "https://github.com/grantcho123-web/ebit-gym/issues"
 
+[project.scripts]
+ebit-gym = "ebit_gym.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/ebit_gym"]
 
