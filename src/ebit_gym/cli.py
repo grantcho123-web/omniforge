@@ -116,7 +116,54 @@ def cmd_eval(args: argparse.Namespace) -> int:
         _dump_results(taskset, results, Path(args.output))
         print(f"\nWrote results JSON to {args.output}", file=out)
 
+    if args.export:
+        export_path = _resolve_export_path(args)
+        n = _export(args.export, results, export_path, args)
+        print(
+            f"Exported {n} attempts in {args.export} format to {export_path}",
+            file=out,
+        )
+
     return EXIT_OK
+
+
+def _resolve_export_path(args: argparse.Namespace) -> Path:
+    if args.export_path:
+        return Path(args.export_path)
+    if args.output:
+        return Path(args.output).with_name("export.jsonl")
+    return Path("runs") / f"export-{args.export}.jsonl"
+
+
+def _export(
+    fmt: str,
+    results: list[tuple[Task, Attempt, GradingResult | None]],
+    path: Path,
+    args: argparse.Namespace,
+) -> int:
+    from ebit_gym.core.export import (
+        export_anthropic_jsonl,
+        export_generic_jsonl,
+        export_openai_finetune_jsonl,
+    )
+
+    if fmt == "openai":
+        return export_openai_finetune_jsonl(
+            results,
+            path,
+            include_failed=args.export_include_failed,
+            system_prompt=args.export_system,
+        )
+    if fmt == "anthropic":
+        return export_anthropic_jsonl(
+            results,
+            path,
+            include_failed=args.export_include_failed,
+            system_prompt=args.export_system,
+        )
+    return export_generic_jsonl(
+        results, path, include_failed=args.export_include_failed
+    )
 
 
 def cmd_list_models(_args: argparse.Namespace) -> int:
@@ -228,6 +275,27 @@ def build_parser() -> argparse.ArgumentParser:
     p_eval.add_argument("--max-tokens", type=int, default=1024)
     p_eval.add_argument("--temperature", type=float, default=0.0)
     p_eval.add_argument("--output", default=None, help="Path to dump full results JSON.")
+    p_eval.add_argument(
+        "--export",
+        default=None,
+        choices=["openai", "anthropic", "generic"],
+        help="Also write graded passing attempts in a lab-consumable JSONL format.",
+    )
+    p_eval.add_argument(
+        "--export-path",
+        default=None,
+        help="Destination for --export. Default: <output dir>/export.jsonl.",
+    )
+    p_eval.add_argument(
+        "--export-include-failed",
+        action="store_true",
+        help="Include attempts that did not pass when exporting.",
+    )
+    p_eval.add_argument(
+        "--export-system",
+        default=None,
+        help="System prompt to prepend to each exported example (openai/anthropic).",
+    )
     p_eval.set_defaults(func=cmd_eval)
 
     p_models = sub.add_parser("list-models", help="List registered model adapters.")

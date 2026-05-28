@@ -172,6 +172,38 @@ def test_inspect_taskset(tmp_path, capsys):
     assert "regex: 1" in out
 
 
+def test_eval_with_export_writes_jsonl(tmp_path):
+    """The --export flag should produce a lab-consumable JSONL alongside the run."""
+    ts_path = tmp_path / "set.json"
+    out_path = tmp_path / "run" / "results.json"
+    export_path = tmp_path / "run" / "export.jsonl"
+    _write_taskset(ts_path)
+
+    main(
+        [
+            "eval",
+            "--task-set",
+            str(ts_path),
+            "--model",
+            "mock:default",
+            "--output",
+            str(out_path),
+            "--export",
+            "generic",
+            "--export-include-failed",  # mock fails everything; need this for non-empty file
+        ]
+    )
+    assert export_path.exists()
+    lines = [line for line in export_path.read_text().splitlines() if line]
+    # mock:default only ships one response; the second task gets an
+    # "exhausted" error and is correctly dropped by the exporter.
+    # q-3 (llm_judge) is skipped at grading time. So exactly one record lands.
+    assert len(lines) == 1
+    payload = json.loads(lines[0])
+    assert payload["task_id"] == "q-1"
+    assert payload["completion"] == "ok"
+
+
 def test_no_subcommand_errors():
     with pytest.raises(SystemExit):
         main([])
