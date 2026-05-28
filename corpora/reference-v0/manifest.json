@@ -1,0 +1,352 @@
+{
+  "name": "ebit-reference-v0",
+  "version": "0.1.0",
+  "schema_version": "0.2.0",
+  "description": "Reference corpus shipped with ebit-gym v0.2. Ten tasks spanning English / Korean / Japanese finance and language reasoning, exercising every reference grader type. Demonstrates the platform — not a production eval corpus.",
+  "tasks": [
+    {
+      "metadata": {
+        "task_id": "q-bond-pv-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.bonds",
+        "difficulty": "medium",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "bond-pricing",
+          "present-value"
+        ],
+        "language": "en"
+      },
+      "prompt": "A 5-year bond pays a $50 annual coupon and matures at $1000 face value. At a 6% annual discount rate, what is its present value? Round to the nearest whole dollar and answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 2.0
+        }
+      },
+      "reference_answer": "958",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-bs-call-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.quant.options",
+        "difficulty": "hard",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "black-scholes",
+          "options"
+        ],
+        "language": "en"
+      },
+      "prompt": "Compute the Black-Scholes call price with the following inputs:\n  Spot S = 100\n  Strike K = 100\n  Risk-free rate r = 0.05 (continuous)\n  Time to maturity T = 1 year\n  Volatility sigma = 0.20\n  No dividends.\nRound to two decimal places and answer with just the number.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.5
+        }
+      },
+      "reference_answer": "10.45",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-acct-ratio-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.accounting",
+        "difficulty": "easy",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "financial-ratios",
+          "current-ratio"
+        ],
+        "language": "en"
+      },
+      "prompt": "A company has $300,000 in current assets and $150,000 in current liabilities. What is its current ratio? Answer with just the number to one decimal place.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 0.05
+        }
+      },
+      "reference_answer": "2.0",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-ko-bond-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.korean.bonds",
+        "difficulty": "medium",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "korean",
+          "bond-pricing"
+        ],
+        "language": "ko"
+      },
+      "prompt": "다음 조건의 채권 현재가치를 계산하세요.\n  만기: 3년\n  액면가: 1,000원\n  연 표면이자: 60원 (매년 말 지급)\n  할인율: 5% (연복리)\n정수로 반올림하여 숫자만 답하세요.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "numeric_tolerance": 2.0
+        }
+      },
+      "reference_answer": "1027",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-ko-culture-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "language.korean.culture",
+        "difficulty": "hard",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "korean",
+          "open-ended",
+          "cultural"
+        ],
+        "language": "ko"
+      },
+      "prompt": "한국의 명절 음식 문화에 대해 한 단락(4-6 문장)으로 설명해 주세요. 최소 두 가지 명절을 언급하고, 각 명절의 대표 음식과 그 의미를 포함하세요.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "human",
+        "config": {
+          "queue": "ko-language-reviewers",
+          "instructions": "Score: 0.0 incoherent or factually wrong; 0.5 basic but accurate; 0.8 fluent with cultural specificity; 1.0 native quality with depth of insight."
+        }
+      },
+      "reference_answer": null,
+      "rubric": "Native Korean fluency + accurate cultural detail + at least two distinct holiday traditions + meaning behind the foods."
+    },
+    {
+      "metadata": {
+        "task_id": "q-ko-idiom-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "language.korean.reasoning",
+        "difficulty": "hard",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "korean",
+          "idioms",
+          "open-ended"
+        ],
+        "language": "ko"
+      },
+      "prompt": "다음 사자성어의 의미를 한 문장으로 설명하고, 일상생활에서 사용할 수 있는 구체적인 예시 하나를 들어 주세요: 우공이산(愚公移山).",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "human",
+        "config": {
+          "queue": "ko-language-reviewers",
+          "instructions": "Score: correct literal meaning, correct figurative meaning, and a plausible everyday example each contribute ~1/3."
+        }
+      },
+      "reference_answer": null,
+      "rubric": "Literal: an old man moving a mountain. Figurative: persistence achieves the seemingly impossible. Example must illustrate this."
+    },
+    {
+      "metadata": {
+        "task_id": "q-ja-math-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "math.basic",
+        "difficulty": "medium",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "japanese",
+          "arithmetic"
+        ],
+        "language": "ja"
+      },
+      "prompt": "次の問題に答えてください。ある商品の定価は 8,000円 で、20% の割引が 適用されます。さらに消費税 10% が割引後の価格に加算されます。最終的な支払い額はいくらですか。数字のみで答えてください。",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {}
+      },
+      "reference_answer": "7040",
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-currency-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "language.keyword",
+        "difficulty": "easy",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "regex",
+          "keyword"
+        ],
+        "language": "en"
+      },
+      "prompt": "Briefly state the world's most-traded reserve currency. Use the three-letter ISO code somewhere in your answer.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "regex",
+        "config": {
+          "pattern": "\\bUSD\\b",
+          "must_match": true
+        }
+      },
+      "reference_answer": null,
+      "rubric": null
+    },
+    {
+      "metadata": {
+        "task_id": "q-deal-memo-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.banking.deal",
+        "difficulty": "hard",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "composite",
+          "investment-banking"
+        ],
+        "language": "en"
+      },
+      "prompt": "Compute the implied EV/EBITDA multiple for this deal:\n  Enterprise value: $1.2 billion\n  LTM EBITDA: $150 million\nState the multiple to one decimal place. In the SAME response, explicitly include the abbreviation EV/EBITDA somewhere in your text.",
+      "materials": [],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "composite",
+        "config": {
+          "components": [
+            {
+              "weight": 2,
+              "spec": {
+                "type": "regex",
+                "config": {
+                  "pattern": "\\b8\\.0\\b|\\bx8\\.0\\b|\\b8\\.0x\\b",
+                  "flags": "i"
+                }
+              }
+            },
+            {
+              "weight": 1,
+              "spec": {
+                "type": "regex",
+                "config": {
+                  "pattern": "EV/EBITDA"
+                }
+              }
+            }
+          ],
+          "pass_threshold": 0.7
+        }
+      },
+      "reference_answer": null,
+      "rubric": "Correct multiple is 8.0x. Must show that number and reference the metric name."
+    },
+    {
+      "metadata": {
+        "task_id": "q-trading-syn-001",
+        "schema_version": "0.2.0",
+        "version": "0.1.0",
+        "domain": "finance.trading.single_asset",
+        "difficulty": "hard",
+        "author": "ebit-reference-v0",
+        "created_at": "2026-05-22T00:00:00Z",
+        "tags": [
+          "trading",
+          "ohlcv",
+          "synthetic"
+        ],
+        "language": "en"
+      },
+      "prompt": "You are evaluating SYN. The table below shows the last 32 OHLCV bars, ending at 2020-01-01T00:31:00 with a close of 102.5927.\n\nWhat position should you take for the NEXT bar? Reply with a single signed number in [-1, 1] where -1 = fully short, 0 = flat, +1 = fully long. Answer with just the number.",
+      "materials": [
+        {
+          "kind": "table",
+          "content": "date,open,high,low,close,volume\n2020-01-01 00:00:00,100.0000,100.6361,99.6791,100.3152,6387\n2020-01-01 00:01:00,100.3152,100.7752,98.8273,99.2873,2489\n2020-01-01 00:02:00,99.2873,100.2402,99.0923,100.0452,2402\n2020-01-01 00:03:00,100.0452,101.6960,99.3500,101.0007,3562\n2020-01-01 00:04:00,101.0007,101.3153,98.7446,99.0592,6196\n2020-01-01 00:05:00,99.0592,99.1678,97.6787,97.7874,2382\n2020-01-01 00:06:00,97.7874,98.6424,97.0673,97.9223,5100\n2020-01-01 00:07:00,97.9223,98.4180,97.1271,97.6228,2039\n2020-01-01 00:08:00,97.6228,97.7759,97.4632,97.6162,5862\n2020-01-01 00:09:00,97.6162,98.0218,96.3911,96.7967,1190\n2020-01-01 00:10:00,96.7967,98.6365,95.8217,97.6615,7381\n2020-01-01 00:11:00,97.6615,99.8680,96.2273,98.4339,1498\n2020-01-01 00:12:00,98.4339,98.7129,98.2298,98.5087,2753\n2020-01-01 00:13:00,98.5087,100.1284,98.0158,99.6354,2571\n2020-01-01 00:14:00,99.6354,101.1795,98.5682,100.1123,8478\n2020-01-01 00:15:00,100.1123,100.2452,99.1328,99.2657,1480\n2020-01-01 00:16:00,99.2657,100.0474,98.8607,99.6424,4863\n2020-01-01 00:17:00,99.6424,99.8473,98.4964,98.7013,6320\n2020-01-01 00:18:00,98.7013,99.8869,98.3966,99.5822,5643\n2020-01-01 00:19:00,99.5822,99.6522,99.4723,99.5424,7126\n2020-01-01 00:20:00,99.5424,100.0720,98.8389,99.3685,8227\n2020-01-01 00:21:00,99.3685,99.4460,98.6265,98.7040,4542\n2020-01-01 00:22:00,98.7040,100.0074,98.6248,99.9281,8453\n2020-01-01 00:23:00,99.9281,100.4448,99.2671,99.7838,3861\n2020-01-01 00:24:00,99.7838,100.6159,98.5352,99.3673,9859\n2020-01-01 00:25:00,99.3673,99.6081,98.7871,99.0279,5540\n2020-01-01 00:26:00,99.0279,99.5931,99.0011,99.5664,7624\n2020-01-01 00:27:00,99.5664,100.8243,98.6829,99.9409,8875\n2020-01-01 00:28:00,99.9409,100.4296,99.8755,100.3643,8133\n2020-01-01 00:29:00,100.3643,101.3030,99.8689,100.8077,8660\n2020-01-01 00:30:00,100.8077,103.2573,100.5505,103.0002,5828\n2020-01-01 00:31:00,103.0002,103.6080,101.9849,102.5927,1391",
+          "mime_type": "text/csv",
+          "name": "SYN_window.csv"
+        }
+      ],
+      "attempt_protocol": "one_shot",
+      "grader_spec": {
+        "type": "exact_match",
+        "config": {
+          "answer": "-1.0",
+          "numeric_tolerance": 0.5
+        }
+      },
+      "reference_answer": "-1.0",
+      "rubric": "Reference is the sign of the next bar's realized return. Numeric tolerance allows partial credit when the model picks the right side of the market with a reasonable size."
+    }
+  ],
+  "splits": {
+    "quick": [
+      "q-bond-pv-001",
+      "q-acct-ratio-001",
+      "q-currency-001"
+    ],
+    "auto_gradable": [
+      "q-bond-pv-001",
+      "q-bs-call-001",
+      "q-acct-ratio-001",
+      "q-ko-bond-001",
+      "q-ja-math-001",
+      "q-currency-001",
+      "q-deal-memo-001",
+      "q-trading-syn-001"
+    ],
+    "korean": [
+      "q-ko-bond-001",
+      "q-ko-culture-001",
+      "q-ko-idiom-001"
+    ],
+    "all": [
+      "q-bond-pv-001",
+      "q-bs-call-001",
+      "q-acct-ratio-001",
+      "q-ko-bond-001",
+      "q-ko-culture-001",
+      "q-ko-idiom-001",
+      "q-ja-math-001",
+      "q-currency-001",
+      "q-deal-memo-001",
+      "q-trading-syn-001"
+    ]
+  },
+  "provenance": {
+    "author_org": "ebit",
+    "license": "Apache-2.0",
+    "build_script": "scripts/build_reference_corpus.py",
+    "build_date": "2026-05-22T00:00:00+00:00",
+    "note": "Demo / smoke-test corpus. Production corpora are curated by domain experts under separate confidentiality agreements."
+  }
+}
