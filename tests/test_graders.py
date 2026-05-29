@@ -192,6 +192,97 @@ def test_exact_match_empty_response_still_fails():
     assert "unparseable" in (r.rationale or "")
 
 
+def test_exact_match_extracts_answer_when_prose_follows_it():
+    """Real Haiku failure on pr-medical-001: correct answer in bold, then
+    prose explanation. The naive last-number heuristic picked '1' from
+    'less than 1%' instead of 0.0098. The bold-extraction prefers the
+    explicit answer."""
+    g = make_grader(
+        GraderSpec(
+            type="exact_match",
+            config={"answer": "0.0098", "numeric_tolerance": 0.001},
+        )
+    )
+    response = (
+        "P(disease | positive) = 0.000099 / 0.010098 = 0.009803...\n\n"
+        "**Answer: 0.0098**\n\n"
+        "This surprisingly low probability (less than 1%) illustrates why "
+        "positive tests for rare diseases require confirmation, even with "
+        "high sensitivity and specificity."
+    )
+    r = g.grade(_task(), _attempt(raw=response))
+    assert r.passed
+
+
+def test_exact_match_extracts_letter_answer_from_bold():
+    """Real Sonnet failure on ko-related-001: correct letter answer in bold
+    at end of long multilingual analysis. Non-numeric exact_match used to
+    do whole-string compare and rejected. Now it extracts."""
+    g = make_grader(
+        GraderSpec(type="exact_match", config={"answer": "C"})
+    )
+    response = (
+        "K-IFRS 제1024호를 검토하면:\n"
+        "A) 최대주주 → 특수관계자\n"
+        "B) 주요 경영진의 배우자 → 특수관계자\n"
+        "D) 종속기업의 임원 → 특수관계자\n"
+        "C) 일반 직원 → 특수관계자에 해당하지 않음\n\n"
+        "**C**"
+    )
+    r = g.grade(_task(), _attempt(raw=response))
+    assert r.passed
+
+
+def test_exact_match_extracts_boxed_latex():
+    """LaTeX \\boxed{X} is common in math-tutoring style responses."""
+    g = make_grader(
+        GraderSpec(
+            type="exact_match",
+            config={"answer": "42", "numeric_tolerance": 0.5},
+        )
+    )
+    response = r"After working through, we have \boxed{42}. That's the answer."
+    r = g.grade(_task(), _attempt(raw=response))
+    assert r.passed
+
+
+def test_exact_match_strips_answer_prefix_from_last_line():
+    """'Final answer: 42' on the last line — strip prefix, parse number."""
+    g = make_grader(
+        GraderSpec(
+            type="exact_match",
+            config={"answer": "42", "numeric_tolerance": 0.5},
+        )
+    )
+    response = "After computing the partial sums...\n\nFinal answer: 42"
+    r = g.grade(_task(), _attempt(raw=response))
+    assert r.passed
+
+
+def test_exact_match_letter_answer_alone_on_last_line():
+    """Last line is just the letter, no bold. Should still extract."""
+    g = make_grader(
+        GraderSpec(type="exact_match", config={"answer": "D"})
+    )
+    response = "Looking at the options, A is too formal, B is awkward, C is acceptable.\n\nD"
+    r = g.grade(_task(), _attempt(raw=response))
+    assert r.passed
+
+
+def test_exact_match_letter_answer_extract_disabled_strict():
+    """If extract_answer=False, fall back to whole-string compare. Useful
+    when you actually want to penalize models that fail to answer cleanly."""
+    g = make_grader(
+        GraderSpec(
+            type="exact_match",
+            config={"answer": "D", "extract_answer": False},
+        )
+    )
+    response = "Long analysis...\n\n**D**"
+    r = g.grade(_task(), _attempt(raw=response))
+    assert not r.passed
+
+
 # --------------------------------------------------------------------- regex
 
 
